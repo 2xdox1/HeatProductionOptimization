@@ -29,13 +29,13 @@ namespace HeatOptimizerApp.Modules.ResultDataManager
             lines.Add("");
             lines.Add($"TOTAL,,{totalCost},{totalCO2},,,");
 
-            var path = Path.Combine(ResultFolder, $"{scenarioName}_saved.csv");
+            var path = System.IO.Path.Combine(ResultFolder, $"{scenarioName}_saved.csv");
             File.WriteAllLines(path, lines);
         }
 
         public List<ProductionUnit> LoadResults(string scenarioName)
         {
-            var path = Path.Combine(ResultFolder, $"{scenarioName}_saved.csv");
+            var path = System.IO.Path.Combine(ResultFolder, $"{scenarioName}_saved.csv");
 
             if (!File.Exists(path))
                 return new List<ProductionUnit>();
@@ -68,10 +68,14 @@ namespace HeatOptimizerApp.Modules.ResultDataManager
             return units;
         }
 
-        private double? ParseNullable(string input)
+        private double? ParseNullable(string? input)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
             if (double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
                 return value;
+
             return null;
         }
     }

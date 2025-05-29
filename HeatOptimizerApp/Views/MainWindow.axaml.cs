@@ -178,15 +178,16 @@ namespace HeatOptimizerApp.Views
             lines.Add("");
             lines.Add($"TOTAL,,{totalCost},{totalCO2},,,");
 
+            #pragma warning disable CS0618
             var saveDialog = new SaveFileDialog
             {
-                Title = "Save scenario data as CSV",
+                Title = "Export CSV",
                 Filters = new List<FileDialogFilter>
                 {
-                    new FileDialogFilter { Name = "CSV files", Extensions = { "csv" } }
-                },
-                InitialFileName = $"{currentScenario}_output.csv"
+                    new FileDialogFilter { Name = "CSV Files", Extensions = { "csv" } }
+                }
             };
+            #pragma warning restore CS0618
 
             var path = await saveDialog.ShowAsync(this);
 
@@ -246,3 +247,5 @@ namespace HeatOptimizerApp.Views
         private readonly Modules.ResultDataManager.ResultDataManager resultManager = new();
     }
 }
+
+

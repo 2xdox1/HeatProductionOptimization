@@ -27,7 +27,7 @@ namespace HeatOptimizerApp.Modules.AssetManager
                     Name = parts[0],
                     MaxHeat = double.Parse(parts[1], CultureInfo.InvariantCulture),
                     ProductionCost = double.Parse(parts[2], CultureInfo.InvariantCulture),
-                    CO2Emission = ParseDouble(parts[3]),
+                    CO2Emission = ParseDouble(parts.ElementAtOrDefault(3)),
                     GasConsumption = ParseDouble(parts.ElementAtOrDefault(4)),
                     OilConsumption = ParseDouble(parts.ElementAtOrDefault(5)),
                     MaxElectricity = ParseDouble(parts.ElementAtOrDefault(6))
@@ -46,10 +46,14 @@ namespace HeatOptimizerApp.Modules.AssetManager
             // Not needed for initial version
         }
 
-        private double? ParseDouble(string input)
+        private double? ParseDouble(string? input)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
             if (double.TryParse(input, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
                 return value;
+
             return null;
         }
     }
