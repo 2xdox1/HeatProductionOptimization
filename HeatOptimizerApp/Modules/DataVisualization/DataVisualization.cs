@@ -1,4 +1,5 @@
 using HeatOptimizerApp.Interfaces;
+using System;
 
 namespace HeatOptimizerApp.Modules.DataVisualization
 {
@@ -6,12 +7,17 @@ namespace HeatOptimizerApp.Modules.DataVisualization
     {
         public void LoadData(string path)
         {
-            // Load visual data like heat demand or production
+            Console.WriteLine("Loaded data for visualization.");
         }
 
         public void SaveData(string path)
         {
-            // Save chart configuration or snapshots
+            Console.WriteLine("Visualization saved.");
+        }
+
+        public void DisplayChart()
+        {
+            Console.WriteLine("Chart displayed.");
         }
     }
 }

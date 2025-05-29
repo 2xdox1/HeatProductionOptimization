@@ -11,7 +11,8 @@ sealed class Program
     {
         TestAssetManager();
         TestSourceDataManager();
-        TestOptimizer(); 
+        TestOptimizer();
+        TestDataVisualization(); 
 
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
@@ -42,6 +43,14 @@ sealed class Program
         optimizer.LoadData(""); // placeholder path
         optimizer.RunOptimization();
     }
+
+    private static void TestDataVisualization()
+    {
+        var dv = new Modules.DataVisualization.DataVisualization();
+        dv.LoadData("");
+        dv.DisplayChart();
+    }
+
 
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
