@@ -11,6 +11,7 @@
         <StackPanel Orientation="Horizontal" Spacing="10">
             <Button Content="Scenario 1" Click="LoadScenario1"/>
             <Button Content="Scenario 2" Click="LoadScenario2"/>
+            <Button Content="Compare Scenarios" Click="CompareScenarios"/>
         </StackPanel>
 
         <CheckBox x:Name="ElectricOnlyCheck"
