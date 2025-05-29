@@ -26,7 +26,6 @@ namespace HeatOptimizerApp.Modules.Core
             _optimizer.LoadData("");         // Placeholder
             _optimizer.RunOptimization();
 
-            _resultDataManager.LoadData(""); // Placeholder
             _dataVisualization.LoadData(""); // Placeholder
             _dataVisualization.DisplayChart();
         }

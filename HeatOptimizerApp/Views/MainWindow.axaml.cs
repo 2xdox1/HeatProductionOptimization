@@ -200,26 +200,49 @@ namespace HeatOptimizerApp.Views
                 DetailsBlock.Text = "Export canceled.";
             }
         }
+
         private void CompareScenarios(object? sender, RoutedEventArgs? e)
+        {
+            var allUnits = controller.GetUnits();
+
+            var s1 = allUnits.Where(u => u.Name is "GB1" or "GB2" or "OB1");
+            var s2 = allUnits.Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1");
+
+            var cost1 = s1.Sum(u => u.ProductionCost);
+            var cost2 = s2.Sum(u => u.ProductionCost);
+            var co21 = s1.Sum(u => u.CO2Emission ?? 0);
+            var co22 = s2.Sum(u => u.CO2Emission ?? 0);
+
+            var diffCost = cost2 - cost1;
+            var diffCO2 = co22 - co21;
+
+            DetailsBlock.Text = $"Comparison:\n" +
+                                $"Scenario 1 → Cost: {cost1}, CO₂: {co21}\n" +
+                                $"Scenario 2 → Cost: {cost2}, CO₂: {co22}\n\n" +
+                                $"Change: {(diffCost >= 0 ? "+" : "")}{diffCost} DKK, " +
+                                $"{(diffCO2 >= 0 ? "+" : "")}{diffCO2} kg CO₂";
+        }
+
+        private void SaveScenarioResults(object? sender, RoutedEventArgs? e)
+        {
+            var allUnits = controller.GetUnits();
+
+            var scenarioUnits = currentScenario switch
             {
-                var allUnits = controller.GetUnits();
+                "Scenario1" => allUnits.Where(u => u.Name is "GB1" or "GB2" or "OB1"),
+                "Scenario2" => allUnits.Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1"),
+                _ => Enumerable.Empty<Modules.AssetManager.ProductionUnit>()
+            };
 
-                var s1 = allUnits.Where(u => u.Name is "GB1" or "GB2" or "OB1");
-                var s2 = allUnits.Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1");
+            if (ElectricOnlyCheck.IsChecked == true)
+                scenarioUnits = scenarioUnits.Where(u => u.MaxElectricity.HasValue && u.MaxElectricity > 0);
 
-                var cost1 = s1.Sum(u => u.ProductionCost);
-                var cost2 = s2.Sum(u => u.ProductionCost);
-                var co21 = s1.Sum(u => u.CO2Emission ?? 0);
-                var co22 = s2.Sum(u => u.CO2Emission ?? 0);
+            var list = scenarioUnits.ToList();
+            resultManager.SaveResults(currentScenario, list);
 
-                var diffCost = cost2 - cost1;
-                var diffCO2 = co22 - co21;
+            DetailsBlock.Text = $"Saved scenario to: SavedResults/{currentScenario}_saved.csv";
+        }
 
-                DetailsBlock.Text = $"Comparison:\n" +
-                                    $"Scenario 1 → Cost: {cost1}, CO₂: {co21}\n" +
-                                    $"Scenario 2 → Cost: {cost2}, CO₂: {co22}\n\n" +
-                                    $"Change: {(diffCost >= 0 ? "+" : "")}{diffCost} DKK, " +
-                                    $"{(diffCO2 >= 0 ? "+" : "")}{diffCO2} kg CO₂";
-            }
+        private readonly Modules.ResultDataManager.ResultDataManager resultManager = new();
     }
 }
