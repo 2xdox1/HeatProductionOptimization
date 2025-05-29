@@ -10,6 +10,7 @@ sealed class Program
     public static void Main(string[] args)
     {
         TestAssetManager();
+        TestSourceDataManager();
 
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
@@ -26,6 +27,12 @@ sealed class Program
         {
             Console.WriteLine($"{unit.Name} ({unit.MaxHeat} MW)");
         }
+    }
+
+    private static void TestSourceDataManager()
+    {
+        var sdm = new Modules.SourceDataManager.SourceDataManager();
+        sdm.LoadData("./Data/TimeSeries_WinterSummer.csv");
     }
 
     public static AppBuilder BuildAvaloniaApp()
