@@ -1,3 +1,5 @@
+/Users/dodo/.nuget/packages/anglesharp.css/0.17.0/lib/net7.0/AngleSharp.Css.dll
+/Users/dodo/.nuget/packages/anglesharp/0.17.1/lib/netstandard2.0/AngleSharp.dll
 /Users/dodo/.nuget/packages/avalonia/11.3.0/ref/net8.0/Avalonia.Base.dll
 /Users/dodo/.nuget/packages/avalonia.controls.colorpicker/11.3.0/lib/net8.0/Avalonia.Controls.ColorPicker.dll
 /Users/dodo/.nuget/packages/avalonia/11.3.0/ref/net8.0/Avalonia.Controls.dll
@@ -22,8 +24,10 @@
 /Users/dodo/.nuget/packages/avalonia.win32/11.3.0/lib/net8.0/Avalonia.Win32.Automation.dll
 /Users/dodo/.nuget/packages/avalonia.win32/11.3.0/lib/net8.0/Avalonia.Win32.dll
 /Users/dodo/.nuget/packages/avalonia.x11/11.3.0/lib/net8.0/Avalonia.X11.dll
+/Users/dodo/.nuget/packages/bcrypt.net-next/4.0.3/lib/net6.0/BCrypt.Net-Next.dll
 /Users/dodo/.nuget/packages/communitytoolkit.mvvm/8.2.1/lib/net6.0/CommunityToolkit.Mvvm.dll
 /Users/dodo/.nuget/packages/harfbuzzsharp/7.3.0.3/lib/net6.0/HarfBuzzSharp.dll
+/Users/dodo/.nuget/packages/htmlsanitizer/9.0.884/lib/net8.0/HtmlSanitizer.dll
 /Users/dodo/.nuget/packages/microcom.runtime/0.11.0/lib/net5.0/MicroCom.Runtime.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.3/ref/net9.0/Microsoft.CSharp.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.3/ref/net9.0/Microsoft.VisualBasic.Core.dll

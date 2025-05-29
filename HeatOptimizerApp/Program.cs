@@ -1,18 +1,33 @@
 ﻿using Avalonia;
+using HeatOptimizerApp.Modules.AssetManager;
 using System;
 
 namespace HeatOptimizerApp;
 
 sealed class Program
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
     [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    public static void Main(string[] args)
+    {
+        TestAssetManager();
 
-    // Avalonia configuration, don't remove; also used by visual designer.
+        BuildAvaloniaApp()
+            .StartWithClassicDesktopLifetime(args);
+    }
+
+    private static void TestAssetManager()
+    {
+        string path = "./Data/ProductionUnits.csv";
+        var assetManager = new AssetManager();
+        assetManager.LoadData(path);
+
+        Console.WriteLine("Asset Manager loaded these units:");
+        foreach (var unit in assetManager.Units)
+        {
+            Console.WriteLine($"{unit.Name} ({unit.MaxHeat} MW)");
+        }
+    }
+
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()

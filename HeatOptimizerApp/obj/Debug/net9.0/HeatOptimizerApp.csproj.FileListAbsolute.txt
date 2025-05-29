@@ -66,3 +66,7 @@
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.pdb
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.genruntimeconfig.cache
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/ref/HeatOptimizerApp.dll
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/AngleSharp.dll
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/AngleSharp.Css.dll
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/BCrypt.Net-Next.dll
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/HtmlSanitizer.dll
