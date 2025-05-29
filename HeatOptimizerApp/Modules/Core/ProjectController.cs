@@ -1,4 +1,5 @@
 using HeatOptimizerApp.Modules.AssetManager;
+using System.Collections.Generic;
 using HeatOptimizerApp.Modules.SourceDataManager;
 using HeatOptimizerApp.Modules.Optimizer;
 using HeatOptimizerApp.Modules.ResultDataManager;
@@ -29,5 +30,10 @@ namespace HeatOptimizerApp.Modules.Core
             _dataVisualization.LoadData(""); // Placeholder
             _dataVisualization.DisplayChart();
         }
+        public List<ProductionUnit> GetUnits()
+        {
+            return _assetManager.Units;
+        }
+
     }
 }
