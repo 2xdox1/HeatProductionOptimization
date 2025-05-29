@@ -3,11 +3,18 @@
         x:Class="HeatOptimizerApp.Views.MainWindow"
         Title="Heat Optimizer"
         Width="500"
-        Height="400">
+        Height="450">
 
     <StackPanel Margin="10" Spacing="10">
+
+        <TextBlock Text="Select Scenario:" FontWeight="Bold"/>
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Content="Scenario 1" Click="LoadScenario1"/>
+            <Button Content="Scenario 2" Click="LoadScenario2"/>
+        </StackPanel>
+
         <TextBlock Text="Production Units:" FontWeight="Bold"/>
-        
+
         <ListBox x:Name="UnitList" SelectionChanged="OnSelectionChanged"/>
 
         <TextBlock x:Name="DetailsBlock" Text="Select a unit to see details..." TextWrapping="Wrap"/>
