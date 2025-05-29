@@ -13,6 +13,11 @@
             <Button Content="Scenario 2" Click="LoadScenario2"/>
         </StackPanel>
 
+        <CheckBox x:Name="ElectricOnlyCheck"
+          Content="Only show units with electricity generation"
+          Checked="ReloadScenario"
+          Unchecked="ReloadScenario"/>
+
         <TextBlock Text="Production Units:" FontWeight="Bold"/>
 
         <ListBox x:Name="UnitList" SelectionChanged="OnSelectionChanged"/>

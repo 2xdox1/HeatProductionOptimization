@@ -10,6 +10,7 @@ namespace HeatOptimizerApp.Views
     public partial class MainWindow : Window
     {
         private readonly ProjectController controller;
+        private string currentScenario = "Scenario1";
 
         public MainWindow()
         {
@@ -22,38 +23,42 @@ namespace HeatOptimizerApp.Views
 
         private void LoadScenario1(object? sender, RoutedEventArgs? e)
         {
-            var units = controller.GetUnits()
-                .Where(u => u.Name == "GB1" || u.Name == "GB2" || u.Name == "OB1")
-                .ToList();
-
-            UnitList.ItemsSource = units
-                .Select(u => $"{u.Name} — {u.MaxHeat} MW, {u.ProductionCost} DKK/MWh")
-                .ToList();
-
-            var totalCost = units.Sum(u => u.ProductionCost);
-            var totalCO2 = units.Sum(u => u.CO2Emission ?? 0);
-
-            ScenarioSummaryBlock.Text = $"Scenario total: {totalCost} DKK/MWh — {totalCO2} kg CO₂/MWh";
-            DetailsBlock.Text = "Scenario 1 loaded.";
-            DrawChart(units);
+            currentScenario = "Scenario1";
+            ReloadScenario(null, null);
         }
 
         private void LoadScenario2(object? sender, RoutedEventArgs? e)
         {
-            var units = controller.GetUnits()
-                .Where(u => u.Name == "GB1" || u.Name == "OB1" || u.Name == "GM1" || u.Name == "HP1")
-                .ToList();
+            currentScenario = "Scenario2";
+            ReloadScenario(null, null);
+        }
 
-            UnitList.ItemsSource = units
+        private void ReloadScenario(object? sender, RoutedEventArgs? e)
+        {
+            var allUnits = controller.GetUnits();
+
+            var scenarioUnits = currentScenario switch
+            {
+                "Scenario1" => allUnits.Where(u => u.Name is "GB1" or "GB2" or "OB1"),
+                "Scenario2" => allUnits.Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1"),
+                _ => Enumerable.Empty<Modules.AssetManager.ProductionUnit>()
+            };
+
+            if (ElectricOnlyCheck.IsChecked == true)
+                scenarioUnits = scenarioUnits.Where(u => u.MaxElectricity.HasValue && u.MaxElectricity > 0);
+
+            var list = scenarioUnits.ToList();
+
+            UnitList.ItemsSource = list
                 .Select(u => $"{u.Name} — {u.MaxHeat} MW, {u.ProductionCost} DKK/MWh")
                 .ToList();
 
-            var totalCost = units.Sum(u => u.ProductionCost);
-            var totalCO2 = units.Sum(u => u.CO2Emission ?? 0);
+            var totalCost = list.Sum(u => u.ProductionCost);
+            var totalCO2 = list.Sum(u => u.CO2Emission ?? 0);
 
             ScenarioSummaryBlock.Text = $"Scenario total: {totalCost} DKK/MWh — {totalCO2} kg CO₂/MWh";
-            DetailsBlock.Text = "Scenario 2 loaded.";
-            DrawChart(units);
+            DetailsBlock.Text = $"{currentScenario} loaded.";
+            DrawChart(list);
         }
 
         private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
