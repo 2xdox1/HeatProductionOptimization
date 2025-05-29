@@ -50,7 +50,6 @@ namespace HeatOptimizerApp.Views
             var list = scenarioUnits.ToList();
 
             var sortBy = (SortCombo.SelectedItem as ComboBoxItem)?.Content?.ToString();
-
             list = sortBy switch
             {
                 "Production Cost" => list.OrderBy(u => u.ProductionCost).ToList(),
@@ -124,6 +123,7 @@ namespace HeatOptimizerApp.Views
                 };
                 Canvas.SetTop(costBar, i * (barHeight + spacing));
                 Canvas.SetLeft(costBar, 0);
+                Avalonia.Controls.ToolTip.SetTip(costBar, $"Cost: {unit.ProductionCost} DKK/MWh");
 
                 var co2Bar = new Rectangle
                 {
@@ -133,6 +133,7 @@ namespace HeatOptimizerApp.Views
                 };
                 Canvas.SetTop(co2Bar, i * (barHeight + spacing));
                 Canvas.SetLeft(co2Bar, costWidth + 5);
+                Avalonia.Controls.ToolTip.SetTip(co2Bar, $"CO₂: {unit.CO2Emission ?? 0} kg/MWh");
 
                 ChartCanvas.Children.Add(costBar);
                 ChartCanvas.Children.Add(co2Bar);
