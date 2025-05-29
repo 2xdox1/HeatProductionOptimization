@@ -3,7 +3,9 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using HeatOptimizerApp.Modules.Core;
+using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace HeatOptimizerApp.Views
 {
@@ -98,7 +100,7 @@ namespace HeatOptimizerApp.Views
                                 $"Max Electricity: {unit.MaxElectricity?.ToString("0.0") ?? "–"} MW";
         }
 
-        private void DrawChart(System.Collections.Generic.List<Modules.AssetManager.ProductionUnit> units)
+        private void DrawChart(List<Modules.AssetManager.ProductionUnit> units)
         {
             ChartCanvas.Children.Clear();
 
@@ -137,6 +139,65 @@ namespace HeatOptimizerApp.Views
 
                 ChartCanvas.Children.Add(costBar);
                 ChartCanvas.Children.Add(co2Bar);
+            }
+        }
+
+        private async void ExportToCsv(object? sender, RoutedEventArgs? e)
+        {
+            var allUnits = controller.GetUnits();
+
+            var scenarioUnits = currentScenario switch
+            {
+                "Scenario1" => allUnits.Where(u => u.Name is "GB1" or "GB2" or "OB1"),
+                "Scenario2" => allUnits.Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1"),
+                _ => Enumerable.Empty<Modules.AssetManager.ProductionUnit>()
+            };
+
+            if (ElectricOnlyCheck.IsChecked == true)
+                scenarioUnits = scenarioUnits.Where(u => u.MaxElectricity.HasValue && u.MaxElectricity > 0);
+
+            var sorted = (SortCombo.SelectedItem as ComboBoxItem)?.Content?.ToString() switch
+            {
+                "Production Cost" => scenarioUnits.OrderBy(u => u.ProductionCost),
+                "CO₂ Emission" => scenarioUnits.OrderBy(u => u.CO2Emission ?? double.MaxValue),
+                _ => scenarioUnits.OrderBy(u => u.Name)
+            };
+
+            var lines = new List<string>
+            {
+                "Name,MaxHeat,ProductionCost,CO2Emission,GasConsumption,OilConsumption,MaxElectricity"
+            };
+
+            foreach (var u in sorted)
+            {
+                lines.Add($"{u.Name},{u.MaxHeat},{u.ProductionCost},{u.CO2Emission},{u.GasConsumption},{u.OilConsumption},{u.MaxElectricity}");
+            }
+
+            var totalCost = sorted.Sum(u => u.ProductionCost);
+            var totalCO2 = sorted.Sum(u => u.CO2Emission ?? 0);
+            lines.Add("");
+            lines.Add($"TOTAL,,{totalCost},{totalCO2},,,");
+
+            var saveDialog = new SaveFileDialog
+            {
+                Title = "Save scenario data as CSV",
+                Filters = new List<FileDialogFilter>
+                {
+                    new FileDialogFilter { Name = "CSV files", Extensions = { "csv" } }
+                },
+                InitialFileName = $"{currentScenario}_output.csv"
+            };
+
+            var path = await saveDialog.ShowAsync(this);
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                File.WriteAllLines(path, lines);
+                DetailsBlock.Text = $"Exported to: {path} ✔";
+            }
+            else
+            {
+                DetailsBlock.Text = "Export canceled.";
             }
         }
     }
