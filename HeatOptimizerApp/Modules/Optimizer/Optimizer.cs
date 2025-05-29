@@ -1,4 +1,5 @@
 using HeatOptimizerApp.Interfaces;
+using System;
 
 namespace HeatOptimizerApp.Modules.Optimizer
 {
@@ -6,12 +7,19 @@ namespace HeatOptimizerApp.Modules.Optimizer
     {
         public void LoadData(string path)
         {
-            // Read input for optimization
+            Console.WriteLine("Optimizer loaded data.");
         }
 
         public void SaveData(string path)
         {
-            // Export optimization result
+            Console.WriteLine("Optimizer saved optimization results.");
+        }
+
+        public void RunOptimization()
+        {
+            Console.WriteLine("Running basic optimization logic...");
+            // just a placeholder, details later
+            Console.WriteLine("Optimization complete.");
         }
     }
 }

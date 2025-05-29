@@ -11,6 +11,7 @@ sealed class Program
     {
         TestAssetManager();
         TestSourceDataManager();
+        TestOptimizer(); 
 
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
@@ -33,6 +34,13 @@ sealed class Program
     {
         var sdm = new Modules.SourceDataManager.SourceDataManager();
         sdm.LoadData("./Data/TimeSeries_WinterSummer.csv");
+    }
+
+    private static void TestOptimizer()
+    {
+        var optimizer = new Modules.Optimizer.Optimizer();
+        optimizer.LoadData(""); // placeholder path
+        optimizer.RunOptimization();
     }
 
     public static AppBuilder BuildAvaloniaApp()
