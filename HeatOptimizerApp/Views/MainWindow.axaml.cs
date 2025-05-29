@@ -49,6 +49,15 @@ namespace HeatOptimizerApp.Views
 
             var list = scenarioUnits.ToList();
 
+            var sortBy = (SortCombo.SelectedItem as ComboBoxItem)?.Content?.ToString();
+
+            list = sortBy switch
+            {
+                "Production Cost" => list.OrderBy(u => u.ProductionCost).ToList(),
+                "CO₂ Emission" => list.OrderBy(u => u.CO2Emission ?? double.MaxValue).ToList(),
+                _ => list.OrderBy(u => u.Name).ToList()
+            };
+
             UnitList.ItemsSource = list
                 .Select(u => $"{u.Name} — {u.MaxHeat} MW, {u.ProductionCost} DKK/MWh")
                 .ToList();
