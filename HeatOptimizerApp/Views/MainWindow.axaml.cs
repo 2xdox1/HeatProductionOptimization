@@ -43,14 +43,29 @@ namespace HeatOptimizerApp.Views
         {
             var selected = UnitList.SelectedItem as string;
 
-            if (selected != null)
-            {
-                DetailsBlock.Text = $"Details:\n{selected}";
-            }
-            else
+            if (selected == null)
             {
                 DetailsBlock.Text = "Select a unit to see details...";
+                return;
             }
+
+            var unit = controller.GetUnits().FirstOrDefault(u =>
+                selected.StartsWith(u.Name));
+
+            if (unit == null)
+            {
+                DetailsBlock.Text = "Details not found.";
+                return;
+            }
+
+            DetailsBlock.Text = $"Details:\n" +
+                                $"Name: {unit.Name}\n" +
+                                $"Max Heat: {unit.MaxHeat} MW\n" +
+                                $"Production Cost: {unit.ProductionCost} DKK/MWh\n" +
+                                $"CO₂: {unit.CO2Emission ?? 0} kg/MWh\n" +
+                                $"Gas: {unit.GasConsumption?.ToString("0.0") ?? "–"} MWh\n" +
+                                $"Oil: {unit.OilConsumption?.ToString("0.0") ?? "–"} MWh\n" +
+                                $"Max Electricity: {unit.MaxElectricity?.ToString("0.0") ?? "–"} MW";
         }
     }
 }
