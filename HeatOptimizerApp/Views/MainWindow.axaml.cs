@@ -13,11 +13,10 @@ namespace HeatOptimizerApp.Views
             var controller = new ProjectController();
             controller.RunProject();
 
-            var names = controller.GetUnits()
-                                  .Select(u => u.Name)
-                                  .ToList();
-
-            UnitList.ItemsSource = names;
+            var units = controller.GetUnits()
+                      .Select(u => $"{u.Name} — {u.MaxHeat} MW, {u.ProductionCost} DKK/MWh")
+                      .ToList();
+            UnitList.ItemsSource = units;
         }
     }
 }
