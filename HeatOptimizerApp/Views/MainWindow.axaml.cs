@@ -21,10 +21,16 @@ namespace HeatOptimizerApp.Views
         {
             var units = controller.GetUnits()
                 .Where(u => u.Name == "GB1" || u.Name == "GB2" || u.Name == "OB1")
+                .ToList();
+
+            UnitList.ItemsSource = units
                 .Select(u => $"{u.Name} — {u.MaxHeat} MW, {u.ProductionCost} DKK/MWh")
                 .ToList();
 
-            UnitList.ItemsSource = units;
+            var totalCost = units.Sum(u => u.ProductionCost);
+            var totalCO2 = units.Sum(u => u.CO2Emission ?? 0);
+
+            ScenarioSummaryBlock.Text = $"Scenario total: {totalCost} DKK/MWh — {totalCO2} kg CO₂/MWh";
             DetailsBlock.Text = "Scenario 1 loaded.";
         }
 
@@ -32,10 +38,16 @@ namespace HeatOptimizerApp.Views
         {
             var units = controller.GetUnits()
                 .Where(u => u.Name == "GB1" || u.Name == "OB1" || u.Name == "GM1" || u.Name == "HP1")
+                .ToList();
+
+            UnitList.ItemsSource = units
                 .Select(u => $"{u.Name} — {u.MaxHeat} MW, {u.ProductionCost} DKK/MWh")
                 .ToList();
 
-            UnitList.ItemsSource = units;
+            var totalCost = units.Sum(u => u.ProductionCost);
+            var totalCO2 = units.Sum(u => u.CO2Emission ?? 0);
+
+            ScenarioSummaryBlock.Text = $"Scenario total: {totalCost} DKK/MWh — {totalCO2} kg CO₂/MWh";
             DetailsBlock.Text = "Scenario 2 loaded.";
         }
 

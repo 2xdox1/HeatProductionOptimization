@@ -17,6 +17,8 @@
 
         <ListBox x:Name="UnitList" SelectionChanged="OnSelectionChanged"/>
 
+        <TextBlock x:Name="ScenarioSummaryBlock" Text="Scenario total will appear here..." FontStyle="Italic" Margin="0,10,0,0"/>
+
         <TextBlock x:Name="DetailsBlock" Text="Select a unit to see details..." TextWrapping="Wrap"/>
     </StackPanel>
 </Window>
