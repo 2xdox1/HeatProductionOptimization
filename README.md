@@ -47,11 +47,27 @@ HeatItOn provides heating to ~1600 buildings through a single district heating n
   └── DataVisualization/
   ```
 ## Testing
-Unit tests for each module
+This project includes unit tests for each major module using the xUnit testing framework:
 
-TDD applied during development of critical components
+- **SourceDataManager**: verifies correct parsing of heat demand and electricity prices
+- **AssetManager**: ensures correct loading of production units and skips malformed lines
+- **ResultDataManager**: tests CSV export and re-import of scenario results
 
-All tests can be run via Test Explorer in Visual Studio
+Tests are designed to cover normal and edge cases, including null values and data integrity
+
+Running Tests
+From the root of the repository:
+```bash
+dotnet test
+```
+Test data is located in *HeatOptimizerApp.Tests/TestData/. Output results are saved in SavedResults/*.
+
+## Technolies Used
+- .NET 9.0
+- Avalonia UI
+- xUnit for unit testing
+- Visual Studio / VS Code (cross-platform support)
+- Git + GitHub for version control
 
 ## Contributors & Project Info
 - Faculty: **Faculty of Engineering**
