@@ -13,18 +13,21 @@ namespace HeatOptimizerApp.Modules.SourceDataManager
 
         public void LoadData(string path)
         {
+            HeatDemand.Clear();
+            ElectricityPrices.Clear();
+
             if (!File.Exists(path)) return;
 
             var lines = File.ReadAllLines(path);
 
-            foreach (var line in lines[1..]) // Skipping headers
+            foreach (var line in lines[1..]) // Skip header
             {
                 var parts = line.Split(',');
 
-                if (parts.Length >= 3)
+                if (parts.Length >= 4)
                 {
-                    HeatDemand.Add(ParseDouble(parts[1]));
-                    ElectricityPrices.Add(ParseDouble(parts[2]));
+                    HeatDemand.Add(ParseDouble(parts[2]));          // Correct: Heat Demand
+                    ElectricityPrices.Add(ParseDouble(parts[3]));   // Correct: Electricity Price
                 }
             }
 
@@ -34,7 +37,7 @@ namespace HeatOptimizerApp.Modules.SourceDataManager
 
         public void SaveData(string path)
         {
-            // Later!
+            // Not implemented yet
         }
 
         private double ParseDouble(string input)
