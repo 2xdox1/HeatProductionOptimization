@@ -29,10 +29,15 @@ namespace HeatOptimizerApp.Modules.Core
             _dataVisualization.LoadData(""); // Placeholder
             _dataVisualization.DisplayChart();
         }
+
         public List<ProductionUnit> GetUnits()
         {
             return _assetManager.Units;
         }
-
+        public void ReloadTimeSeries()
+        {
+            Console.WriteLine("Reloading time series...");
+            _sourceDataManager.LoadData("./Data/TimeSeries_WinterSummer.csv");
+        }
     }
 }
