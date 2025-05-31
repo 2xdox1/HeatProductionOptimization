@@ -159,3 +159,4 @@
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp.Tests/obj/Debug/net9.0/HeatOptimizerApp.Tests.genruntimeconfig.cache
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp.Tests/obj/Debug/net9.0/ref/HeatOptimizerApp.Tests.dll
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp.Tests/bin/Debug/net9.0/TestData/ProductionUnits_Test.csv
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp.Tests/bin/Debug/net9.0/TestData/ProductionUnits_Broken.csv

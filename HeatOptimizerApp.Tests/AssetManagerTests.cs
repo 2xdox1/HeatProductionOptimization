@@ -27,4 +27,22 @@ public class AssetManagerTests
         Assert.Null(assetManager.Units[0].OilConsumption);
         Assert.Null(assetManager.Units[0].MaxElectricity);
     }
+    
+    [Fact]
+    public void LoadData_ShouldSkipMalformedLines()
+    {
+        // Arrange
+        var assetManager = new AssetManager();
+        var path = Path.Combine("TestData", "ProductionUnits_Broken.csv");
+        Console.WriteLine($"Testing malformed file at: {Path.GetFullPath(path)}");
+
+        // Act
+        assetManager.LoadData(path);
+
+        // Assert
+        Assert.Equal(2, assetManager.Units.Count);
+        Assert.Equal("GB1", assetManager.Units[0].Name);
+        Assert.Equal("HP1", assetManager.Units[1].Name);
+    }
 }
+
