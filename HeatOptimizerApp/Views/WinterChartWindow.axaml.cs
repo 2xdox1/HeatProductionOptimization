@@ -10,6 +10,13 @@ namespace HeatOptimizerApp.Views
 {
     public partial class WinterChartWindow : Window
     {
+        // Parameterless constructor required by Avalonia XAML loader
+        public WinterChartWindow()
+        {
+            InitializeComponent();
+        }
+
+        // Our existing constructor with parameters
         public WinterChartWindow(IEnumerable<ISeries> series, List<string> labels)
         {
             InitializeComponent();

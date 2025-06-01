@@ -1,8 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using HeatOptimizerApp.Models;
 using LiveChartsCore;
+using LiveChartsCore.Measure;               // For Axis
+using LiveChartsCore.Drawing;               // For SolidColorPaint
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Avalonia;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;                            // For SKColors
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -57,7 +61,8 @@ public partial class MainWindowViewModel : ObservableObject
         get => winterHeatDemandData;
         set
         {
-            winterHeatDemandData = value;
+            winterHeatDemandData = value ?? new List<TimeSeriesPoint>(); // <-- null-coalesce here
+            WinterDailyHeatDemandData = AggregateDaily(winterHeatDemandData);
             OnPropertyChanged(nameof(WinterHeatDemandData));
             UpdateChart();
         }
@@ -70,8 +75,35 @@ public partial class MainWindowViewModel : ObservableObject
         get => summerHeatDemandData;
         set
         {
-            summerHeatDemandData = value;
+            summerHeatDemandData = value ?? new List<TimeSeriesPoint>(); // <-- null-coalesce here
+            SummerDailyHeatDemandData = AggregateDaily(summerHeatDemandData);
             OnPropertyChanged(nameof(SummerHeatDemandData));
+            UpdateChart();
+        }
+    }
+
+    // Daily aggregated heat demand for winter
+    private List<TimeSeriesPoint> winterDailyHeatDemandData = new();
+    public List<TimeSeriesPoint> WinterDailyHeatDemandData
+    {
+        get => winterDailyHeatDemandData;
+        set
+        {
+            winterDailyHeatDemandData = value;
+            OnPropertyChanged(nameof(WinterDailyHeatDemandData));
+            UpdateChart();
+        }
+    }
+
+    // Daily aggregated heat demand for summer
+    private List<TimeSeriesPoint> summerDailyHeatDemandData = new();
+    public List<TimeSeriesPoint> SummerDailyHeatDemandData
+    {
+        get => summerDailyHeatDemandData;
+        set
+        {
+            summerDailyHeatDemandData = value;
+            OnPropertyChanged(nameof(SummerDailyHeatDemandData));
             UpdateChart();
         }
     }
@@ -121,27 +153,28 @@ public partial class MainWindowViewModel : ObservableObject
     {
         IEnumerable<double> values;
 
-        if (IsWinter && WinterHeatDemandData != null && WinterHeatDemandData.Count > 0)
+        if (IsWinter)
         {
-            values = WinterHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
-        }
-        else if (!IsWinter && SummerHeatDemandData != null && SummerHeatDemandData.Count > 0)
-        {
-            values = SummerHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
+            values = IsHourly && WinterHeatDemandData != null && WinterHeatDemandData.Count > 0
+                ? WinterHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value)
+                : WinterDailyHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
         }
         else
         {
-            // Fallback mock data (simple sine wave or fixed data)
-            values = Enumerable.Range(0, 24).Select(i => 10 + 5 * Math.Sin(i / 24.0 * 2 * Math.PI));
+            values = IsHourly && SummerHeatDemandData != null && SummerHeatDemandData.Count > 0
+                ? SummerHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value)
+                : SummerDailyHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
         }
 
         ChartSeries.Clear();
+
+        int barWidth = IsHourly ? 15 : 30;
 
         ChartSeries.Add(new ColumnSeries<double>
         {
             Name = $"{SelectedScenario} - {(IsWinter ? "Winter" : "Summer")} - {(IsHourly ? "Hourly" : "Daily")}",
             Values = values.ToArray(),
-            MaxBarWidth = 20
+            MaxBarWidth = barWidth
         });
 
         XAxes = new List<Axis>
@@ -151,9 +184,26 @@ public partial class MainWindowViewModel : ObservableObject
                 Name = IsHourly ? "Hour" : "Day",
                 Labels = IsHourly
                     ? Enumerable.Range(0, 24).Select(i => i.ToString()).ToList()
-                    : Enumerable.Range(1, 14).Select(i => $"Day {i}").ToList()
+                    : Enumerable.Range(1, (IsWinter ? WinterDailyHeatDemandData.Count : SummerDailyHeatDemandData.Count))
+                        .Select(i => $"Day {i}").ToList()
             }
         };
+
+        // Determine current data set for Y axis
+        List<TimeSeriesPoint> currentData;
+        if (IsWinter)
+        {
+            currentData = IsHourly ? WinterHeatDemandData ?? new List<TimeSeriesPoint>() : WinterDailyHeatDemandData ?? new List<TimeSeriesPoint>();
+        }
+        else
+        {
+            currentData = IsHourly ? SummerHeatDemandData ?? new List<TimeSeriesPoint>() : SummerDailyHeatDemandData ?? new List<TimeSeriesPoint>();
+        }
+
+        // Calculate maxLimit safely (fallback to 50 if null or empty)
+        double maxLimit = (currentData != null && currentData.Count > 0)
+            ? CalculateMaxLimit(currentData)
+            : 50;
 
         YAxes = new List<Axis>
         {
@@ -161,13 +211,15 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 Name = "Heat Produced (MW)",
                 MinLimit = 0,
-                MaxLimit = CalculateMaxLimit(IsWinter ? WinterHeatDemandData : SummerHeatDemandData),
-                MinStep = 5 // grid line spacing for denser grid
+                MaxLimit = maxLimit * 1.1,
+                MinStep = Math.Max(1, maxLimit / 10),
+                ForceStepToMin = true,
+                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 }
             }
         };
 
         ChartTitle = $"{SelectedScenario}: {(IsWinter ? "Winter" : "Summer")} — {(IsHourly ? "Hourly" : "Daily")} Heat Production";
-        OnPropertyChanged(nameof(ChartTitle));  // Notify UI immediately about title change
+        OnPropertyChanged(nameof(ChartTitle));
     }
 
     // Helper method to calculate a nice rounded max limit for the Y axis
@@ -180,5 +232,27 @@ public partial class MainWindowViewModel : ObservableObject
 
         // Round up to nearest multiple of 5
         return Math.Ceiling(maxVal / 5) * 5;
+    }
+
+    // Helper method to aggregate hourly data into daily sums
+    private List<TimeSeriesPoint> AggregateDaily(List<TimeSeriesPoint> hourlyData)
+    {
+        if (hourlyData == null || hourlyData.Count == 0)
+            return new List<TimeSeriesPoint>();
+
+        int days = hourlyData.Count / 24;
+        var dailyData = new List<TimeSeriesPoint>();
+
+        for (int day = 0; day < days; day++)
+        {
+            double dailySum = hourlyData
+                .Skip(day * 24)
+                .Take(24)
+                .Sum(p => p.Value);
+
+            dailyData.Add(new TimeSeriesPoint { Hour = day + 1, Value = dailySum });
+        }
+
+        return dailyData;
     }
 }

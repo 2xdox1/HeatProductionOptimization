@@ -40,7 +40,7 @@
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.3/ref/net9.0/Microsoft.Win32.Registry.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.3/ref/net9.0/mscorlib.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.3/ref/net9.0/netstandard.dll
-/Users/dodo/.nuget/packages/skiasharp/2.88.9/lib/net6.0/SkiaSharp.dll
+/Users/dodo/.nuget/packages/skiasharp/3.119.0/ref/net8.0/SkiaSharp.dll
 /Users/dodo/.nuget/packages/skiasharp.harfbuzz/2.88.9/lib/net6.0/SkiaSharp.HarfBuzz.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.3/ref/net9.0/System.AppContext.dll
 /usr/local/share/dotnet/packs/Microsoft.NETCore.App.Ref/9.0.3/ref/net9.0/System.Buffers.dll

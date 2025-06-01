@@ -10,6 +10,13 @@ namespace HeatOptimizerApp.Views
 {
     public partial class SummerChartWindow : Window
     {
+        // Parameterless constructor required by Avalonia runtime
+        public SummerChartWindow()
+        {
+            InitializeComponent();
+        }
+
+        // Your existing constructor with series and labels
         public SummerChartWindow(IEnumerable<ISeries> series, List<string> labels)
         {
             InitializeComponent();
