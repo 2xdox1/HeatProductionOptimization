@@ -42,10 +42,14 @@ namespace HeatOptimizerApp.Views
             }
         }
 
-        private void CompareScenarios(object? sender, RoutedEventArgs e)
+        private void CompareScenarios(object sender, RoutedEventArgs e)
         {
-            // TODO: Implement scenario comparison logic here
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.GenerateScenarioComparisons();
+            }
         }
+
 
         private void SaveScenarioResults(object? sender, RoutedEventArgs e)
         {

@@ -7,8 +7,10 @@ using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
 using System;
 using System.Linq;
+using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using HeatOptimizerApp.Utils;
 using HeatOptimizerApp.Models;
 using HeatOptimizerApp.Modules.Core;
 using HeatOptimizerApp.Modules.AssetManager;
@@ -381,5 +383,40 @@ public partial class MainWindowViewModel : ObservableObject
             TotalElectricityCapacity = units.Sum(u => u.MaxElectricity ?? 0),
         };
     }
+    public ICommand LoadScenarioCommand => new RelayCommand(ExecuteLoadScenario);
 
+    private void ExecuteLoadScenario()
+    {
+        if (!string.IsNullOrEmpty(SelectedScenario))
+            LoadScenarioUnits();
+    }
+
+    public ScenarioSummary Scenario1Summary { get; set; } = new();
+    public ScenarioSummary Scenario2Summary { get; set; } = new();
+
+    public void GenerateScenarioComparisons()
+    {
+        var units1 = GetUnitsForScenario1();
+        Scenario1Summary = CreateSummary("Scenario 1", units1);
+
+        var units2 = GetUnitsForScenario2();
+        Scenario2Summary = CreateSummary("Scenario 2", units2);
+
+        OnPropertyChanged(nameof(Scenario1Summary));
+        OnPropertyChanged(nameof(Scenario2Summary));
+    }
+
+    private ScenarioSummary CreateSummary(string name, IEnumerable<ProductionUnit> units)
+    {
+        return new ScenarioSummary
+        {
+            ScenarioName = name,
+            TotalMaxHeat = units.Sum(u => u.MaxHeat),
+            TotalCost = units.Sum(u => u.ProductionCost),
+            TotalCO2 = units.Sum(u => u.CO2Emission ?? 0),
+            TotalGas = units.Sum(u => u.GasConsumption ?? 0),
+            TotalOil = units.Sum(u => u.OilConsumption ?? 0),
+            TotalElectricityCapacity = units.Sum(u => u.MaxElectricity ?? 0)
+        };
+    }
 }

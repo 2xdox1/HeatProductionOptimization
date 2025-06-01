@@ -9,7 +9,7 @@
 
   <DockPanel>
 
-    <!-- Fixed Top Toolbar -->
+    <!-- Top Toolbar -->
     <Border Padding="10" Background="LightGray" DockPanel.Dock="Top">
       <StackPanel Orientation="Horizontal" Spacing="10">
         <Button Content="Save Scenario Results" Click="SaveScenarioResults"/>
@@ -20,22 +20,22 @@
       </StackPanel>
     </Border>
 
-    <!-- Tab Control -->
+    <!-- Main Tabs -->
     <TabControl DockPanel.Dock="Bottom">
 
-      <!-- Tab 1: Scenario View -->
+      <!-- Scenario View Tab -->
       <TabItem Header="Scenario View">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="10" Spacing="10">
 
-            <!-- Scenario Buttons -->
+            <!-- Scenario Selection -->
             <StackPanel Orientation="Horizontal" Spacing="5">
               <Button Content="Scenario 1" Click="LoadScenario1"/>
               <Button Content="Scenario 2" Click="LoadScenario2"/>
               <Button Content="Compare Scenarios" Click="CompareScenarios"/>
             </StackPanel>
 
-            <!-- Sort and Filter Controls -->
+            <!-- Sorting & Filtering -->
             <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
               <TextBlock Text="Sort by:" VerticalAlignment="Center"/>
               <ComboBox SelectedItem="{Binding SelectedSortOption, Mode=TwoWay}">
@@ -44,13 +44,11 @@
                 <sys:String>CO₂ Emission</sys:String>
               </ComboBox>
 
-
-
               <CheckBox Content="Only show units with electricity generation"
                         IsChecked="{Binding FilterElectricOnly}" Margin="20,0,0,0"/>
             </StackPanel>
 
-            <!-- Units List -->
+            <!-- Unit List -->
             <ListBox ItemsSource="{Binding Units}"
                      SelectedItem="{Binding SelectedUnitName, Mode=TwoWay}"
                      Height="250"
@@ -62,7 +60,7 @@
                        TextWrapping="Wrap"
                        FontSize="12"/>
 
-            <!-- Chart View Toggles -->
+            <!-- Chart Toggles -->
             <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,20,0,0">
               <TextBlock Text="Season:" VerticalAlignment="Center"/>
               <ToggleButton Content="Winter" IsChecked="{Binding IsWinter}" />
@@ -72,10 +70,10 @@
               <ToggleButton Content="Daily" IsChecked="{Binding IsDaily}" />
             </StackPanel>
 
-            <!-- Dynamic Chart Title -->
+            <!-- Chart Title -->
             <TextBlock Text="{Binding ChartTitle}" FontWeight="Bold" FontSize="16" Margin="0,20,0,0"/>
 
-            <!-- Unified Chart Area -->
+            <!-- Unified Chart -->
             <lvc:CartesianChart Series="{Binding ChartSeries}"
                                 XAxes="{Binding XAxes}"
                                 YAxes="{Binding YAxes}"
@@ -98,27 +96,55 @@
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="Summary">
-      
-      <ScrollViewer>
-        <StackPanel Margin="20" Spacing="8">
-          <TextBlock Text="Scenario Summary" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-          <TextBlock Text="{Binding Summary.FormattedHeat}" />
-          <TextBlock Text="{Binding Summary.FormattedCost}" />
-          <TextBlock Text="{Binding Summary.FormattedCO2}" />
-          <TextBlock Text="{Binding Summary.FormattedGas}" />
-          <TextBlock Text="{Binding Summary.FormattedOil}" />
-          <TextBlock Text="{Binding Summary.FormattedElectricity}" />
-        </StackPanel>
-      </ScrollViewer>
-    </TabItem>
+      <!-- Comparison Tab -->
+      <TabItem Header="Comparison">
+        <ScrollViewer>
+          <StackPanel Margin="20" Spacing="12">
+            <TextBlock Text="Scenario Comparison" FontSize="20" FontWeight="Bold" />
 
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="0,10,0,0">
+              <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Scenario1Summary.ScenarioName}" FontWeight="Bold"/>
+              <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Scenario2Summary.ScenarioName}" FontWeight="Bold"/>
 
-      <!-- Tab 2: Comparison & Summary -->
-      <TabItem Header="Comparison &amp; Summary">
-        <StackPanel Margin="10">
-          <TextBlock Text="Comparison &amp; Summary UI goes here."/>
-        </StackPanel>
+              <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedHeat}" />
+              <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedHeat}" />
+
+              <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedCost}" />
+              <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedCost}" />
+
+              <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedCO2}" />
+              <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedCO2}" />
+
+              <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedGas}" />
+              <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedGas}" />
+
+              <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedElectricity}" />
+              <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedElectricity}" />
+            </Grid>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- Winter Chart Tab -->
+      <TabItem Header="Winter Chart">
+        <ScrollViewer>
+          <lvc:CartesianChart Series="{Binding WinterSeries}"
+                              XAxes="{Binding XAxes}"
+                              YAxes="{Binding YAxes}"
+                              LegendPosition="Right"
+                              Height="400"/>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- Summer Chart Tab -->
+      <TabItem Header="Summer Chart">
+        <ScrollViewer>
+          <lvc:CartesianChart Series="{Binding SummerSeries}"
+                              XAxes="{Binding XAxesSummer}"
+                              YAxes="{Binding YAxesSummer}"
+                              LegendPosition="Right"
+                              Height="400"/>
+        </ScrollViewer>
       </TabItem>
 
     </TabControl>
