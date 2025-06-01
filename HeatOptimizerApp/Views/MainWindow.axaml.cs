@@ -276,6 +276,27 @@ namespace HeatOptimizerApp.Views
             var chartWindow = new SummerChartWindow(vm.SummerSeries, vm.HourLabels);
             chartWindow.Show();
         }
+        private void OnToggleChart(object? sender, RoutedEventArgs e)
+        {
+            if (DataContext is not MainWindowViewModel vm) return;
 
+            if (sender == WinterToggle)
+            {
+                WinterToggle.IsChecked = true;
+                SummerToggle.IsChecked = false;
+
+                var chartWindow = new WinterChartWindow(vm.WinterSeries, vm.HourLabels);
+                chartWindow.Show();
+            }
+            else if (sender == SummerToggle)
+            {
+                WinterToggle.IsChecked = false;
+                SummerToggle.IsChecked = true;
+
+                var chartWindow = new SummerChartWindow(vm.SummerSeries, vm.HourLabels);
+                chartWindow.Show();
+            }
+
+        }
     }
 }
