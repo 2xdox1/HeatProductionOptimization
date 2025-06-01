@@ -35,6 +35,12 @@ public partial class MainWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private bool isHourly = true;
+    [ObservableProperty]
+    private string selectedScenario = "Scenario1";
+    partial void OnSelectedScenarioChanged(string value)
+    {
+        UpdateMainChart();
+    }
 
     public ObservableCollection<ISeries> ScenarioComparisonSeries { get; set; } = new();
 
@@ -86,13 +92,16 @@ public partial class MainWindowViewModel : ObservableObject
         UpdateMainChart();
     }
         private void UpdateMainChart()
-    {
-        ChartSeries = new ObservableCollection<ISeries>(ChartDataLoader.GetSeries(
-            IsWinter ? "Winter" : "Summer",
-            IsHourly ? "Hourly" : "Daily"
-        ));
+        {
+        ChartSeries = new ObservableCollection<ISeries>(
+            ChartDataLoader.GetSeries(
+                IsWinter ? "Winter" : "Summer",
+                IsHourly ? "Hourly" : "Daily",
+                SelectedScenario
+            )
+        );
 
-        ChartTitle = $"{(IsWinter ? "Winter" : "Summer")} — {(IsHourly ? "Hourly" : "Daily")} Heat Production";
+        ChartTitle = $"{SelectedScenario}: {(IsWinter ? "Winter" : "Summer")} — {(IsHourly ? "Hourly" : "Daily")} Heat Production";
 
         XAxes = new()
         {

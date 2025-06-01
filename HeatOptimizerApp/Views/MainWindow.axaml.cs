@@ -18,12 +18,18 @@ public partial class MainWindow : Window
 
     private void LoadScenario1(object? sender, RoutedEventArgs? e)
     {
-        // Optional: Implement scenario-specific toggling if needed
+        if (DataContext is MainWindowViewModel vm)
+        {
+            vm.SelectedScenario = "Scenario1";
+        }
     }
 
     private void LoadScenario2(object? sender, RoutedEventArgs? e)
     {
-        // Optional: Implement scenario-specific toggling if needed
+        if (DataContext is MainWindowViewModel vm)
+        {
+            vm.SelectedScenario = "Scenario2";
+        }
     }
 
     private void CompareScenarios(object? sender, RoutedEventArgs? e)
