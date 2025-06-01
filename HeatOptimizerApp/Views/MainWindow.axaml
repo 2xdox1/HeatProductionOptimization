@@ -24,9 +24,46 @@
       <TabItem Header="Scenario View">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="10" Spacing="10">
-            <!-- Paste your current MainWindow content here starting from Select Scenario textblock down -->
-            <!-- Replace top scenario buttons inside toolbar now -->
-            <!-- All your existing controls go here -->
+
+            <!-- Scenario Buttons -->
+            <StackPanel Orientation="Horizontal" Spacing="5">
+              <Button Content="Scenario 1" Click="LoadScenario1"/>
+              <Button Content="Scenario 2" Click="LoadScenario2"/>
+              <Button Content="Compare Scenarios" Click="CompareScenarios"/>
+            </StackPanel>
+
+            <!-- Chart View Toggles -->
+            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+              <TextBlock Text="Season:" VerticalAlignment="Center"/>
+              <ToggleButton Content="Winter" IsChecked="{Binding IsWinter}" />
+              <ToggleButton Content="Summer" IsChecked="{Binding IsSummer}" />
+              <TextBlock Text="Time Scale:" Margin="20,0,0,0" VerticalAlignment="Center"/>
+              <ToggleButton Content="Hourly" IsChecked="{Binding IsHourly}" />
+              <ToggleButton Content="Daily" IsChecked="{Binding IsDaily}" />
+            </StackPanel>
+
+            <!-- Dynamic Chart Title -->
+            <TextBlock Text="{Binding ChartTitle}" FontWeight="Bold" FontSize="16" Margin="0,20,0,0"/>
+
+            <!-- Unified Chart Area -->
+            <lvc:CartesianChart Series="{Binding ChartSeries}"
+                                XAxes="{Binding XAxes}"
+                                YAxes="{Binding YAxes}"
+                                LegendPosition="Right"
+                                Height="300"/>
+
+            <!-- Legend -->
+            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0,20,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="5">
+                <Rectangle Width="15" Height="15" Fill="SteelBlue"/>
+                <TextBlock Text="Production Cost" VerticalAlignment="Center"/>
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="5">
+                <Rectangle Width="15" Height="15" Fill="OrangeRed"/>
+                <TextBlock Text="CO₂ Emission" VerticalAlignment="Center"/>
+              </StackPanel>
+            </StackPanel>
+
           </StackPanel>
         </ScrollViewer>
       </TabItem>
