@@ -72,7 +72,7 @@ public partial class MainWindow : Window
             var heatDemandData = sourceDataManager.LoadTimeSeries(files[0].Path.LocalPath);
             if (DataContext is MainWindowViewModel vm)
             {
-                vm.HeatDemandData = heatDemandData;
+                vm.WinterHeatDemandData = heatDemandData;
                 vm.UpdateChart();
             }
         }
@@ -95,7 +95,7 @@ public partial class MainWindow : Window
             var heatDemandData = sourceDataManager.LoadTimeSeries(files[0].Path.LocalPath);
             if (DataContext is MainWindowViewModel vm)
             {
-                vm.HeatDemandData = heatDemandData;
+                vm.SummerHeatDemandData = heatDemandData;
                 vm.UpdateChart();
             }
         }

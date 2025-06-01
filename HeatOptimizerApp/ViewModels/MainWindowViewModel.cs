@@ -50,15 +50,28 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private string chartTitle = "";
 
-    // Heat demand data loaded from CSV
-    private List<TimeSeriesPoint> heatDemandData = new();
-    public List<TimeSeriesPoint> HeatDemandData
+    // Heat demand data loaded from CSV for winter
+    private List<TimeSeriesPoint> winterHeatDemandData = new();
+    public List<TimeSeriesPoint> WinterHeatDemandData
     {
-        get => heatDemandData;
+        get => winterHeatDemandData;
         set
         {
-            heatDemandData = value;
-            OnPropertyChanged(nameof(HeatDemandData));
+            winterHeatDemandData = value;
+            OnPropertyChanged(nameof(WinterHeatDemandData));
+            UpdateChart();
+        }
+    }
+
+    // Heat demand data loaded from CSV for summer
+    private List<TimeSeriesPoint> summerHeatDemandData = new();
+    public List<TimeSeriesPoint> SummerHeatDemandData
+    {
+        get => summerHeatDemandData;
+        set
+        {
+            summerHeatDemandData = value;
+            OnPropertyChanged(nameof(SummerHeatDemandData));
             UpdateChart();
         }
     }
@@ -103,14 +116,18 @@ public partial class MainWindowViewModel : ObservableObject
         UpdateChart();
     }
 
-    // Update the main chart using loaded heat demand data or fallback mock data
+    // Update the main chart using loaded winter or summer heat demand data or fallback mock data
     public void UpdateChart()
     {
         IEnumerable<double> values;
 
-        if (HeatDemandData != null && HeatDemandData.Count > 0)
+        if (IsWinter && WinterHeatDemandData != null && WinterHeatDemandData.Count > 0)
         {
-            values = HeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
+            values = WinterHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
+        }
+        else if (!IsWinter && SummerHeatDemandData != null && SummerHeatDemandData.Count > 0)
+        {
+            values = SummerHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
         }
         else
         {
@@ -144,12 +161,13 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 Name = "Heat Produced (MW)",
                 MinLimit = 0,
-                MaxLimit = CalculateMaxLimit(HeatDemandData),
+                MaxLimit = CalculateMaxLimit(IsWinter ? WinterHeatDemandData : SummerHeatDemandData),
                 MinStep = 5 // grid line spacing for denser grid
             }
         };
 
         ChartTitle = $"{SelectedScenario}: {(IsWinter ? "Winter" : "Summer")} — {(IsHourly ? "Hourly" : "Daily")} Heat Production";
+        OnPropertyChanged(nameof(ChartTitle));  // Notify UI immediately about title change
     }
 
     // Helper method to calculate a nice rounded max limit for the Y axis
