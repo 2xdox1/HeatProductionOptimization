@@ -11,11 +11,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using HeatOptimizerApp.Modules.AssetManager;
+using HeatOptimizerApp.Modules.Core;
 
 namespace HeatOptimizerApp.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {
+    private readonly ProjectController controller = new ProjectController();
+
     // Properties for toggles
     [ObservableProperty]
     private bool isWinter = true;
@@ -33,7 +37,7 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private string selectedScenario = "Scenario1";
 
-    // Collection of production units (placeholder, populate as needed)
+    // Collection of production units (strings of names)
     [ObservableProperty]
     private ObservableCollection<string> units = new();
 
@@ -61,7 +65,7 @@ public partial class MainWindowViewModel : ObservableObject
         get => winterHeatDemandData;
         set
         {
-            winterHeatDemandData = value ?? new List<TimeSeriesPoint>(); // <-- null-coalesce here
+            winterHeatDemandData = value ?? new List<TimeSeriesPoint>();
             WinterDailyHeatDemandData = AggregateDaily(winterHeatDemandData);
             OnPropertyChanged(nameof(WinterHeatDemandData));
             UpdateChart();
@@ -75,7 +79,7 @@ public partial class MainWindowViewModel : ObservableObject
         get => summerHeatDemandData;
         set
         {
-            summerHeatDemandData = value ?? new List<TimeSeriesPoint>(); // <-- null-coalesce here
+            summerHeatDemandData = value ?? new List<TimeSeriesPoint>();
             SummerDailyHeatDemandData = AggregateDaily(summerHeatDemandData);
             OnPropertyChanged(nameof(SummerHeatDemandData));
             UpdateChart();
@@ -110,11 +114,15 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
+        // Initialize controller
+        controller.RunProject();
+
         // Initialize toggles mutually exclusive
         IsSummer = !IsWinter;
         IsDaily = !IsHourly;
 
-        // Initialize axes and chart series with default/mock data
+        LoadScenarioUnits(); // Load initial scenario units
+
         UpdateChart();
     }
 
@@ -145,6 +153,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     partial void OnSelectedScenarioChanged(string value)
     {
+        LoadScenarioUnits();
         UpdateChart();
     }
 
@@ -254,5 +263,34 @@ public partial class MainWindowViewModel : ObservableObject
         }
 
         return dailyData;
+    }
+
+    public void LoadScenarioUnits()
+    {
+        Units.Clear();
+
+        IEnumerable<ProductionUnit> scenarioUnits = SelectedScenario switch
+        {
+            "Scenario1" => GetUnitsForScenario1(),
+            "Scenario2" => GetUnitsForScenario2(),
+            _ => Enumerable.Empty<ProductionUnit>()
+        };
+
+        foreach (var unit in scenarioUnits)
+        {
+            Units.Add(unit.Name);
+        }
+
+        OnPropertyChanged(nameof(Units));
+    }
+
+    private IEnumerable<ProductionUnit> GetUnitsForScenario1()
+    {
+        return controller.GetUnits().Where(u => u.Name is "GB1" or "GB2" or "OB1");
+    }
+
+    private IEnumerable<ProductionUnit> GetUnitsForScenario2()
+    {
+        return controller.GetUnits().Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1");
     }
 }

@@ -17,12 +17,28 @@ public partial class MainWindow : Window
 
     private void LoadScenario1(object? sender, RoutedEventArgs e)
     {
-        // TODO: Implement scenario 1 loading logic
+        if (DataContext is MainWindowViewModel vm)
+        {
+            vm.SelectedScenario = "Scenario1";
+            ReloadScenario();
+        }
     }
 
     private void LoadScenario2(object? sender, RoutedEventArgs e)
     {
-        // TODO: Implement scenario 2 loading logic
+        if (DataContext is MainWindowViewModel vm)
+        {
+            vm.SelectedScenario = "Scenario2";
+            ReloadScenario();
+        }
+    }
+
+    private void ReloadScenario()
+    {
+        if (DataContext is MainWindowViewModel vm)
+        {
+            vm.LoadScenarioUnits(); // new method to be implemented in ViewModel
+        }
     }
 
     private void CompareScenarios(object? sender, RoutedEventArgs e)

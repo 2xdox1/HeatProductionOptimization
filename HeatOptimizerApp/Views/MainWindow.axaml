@@ -73,10 +73,14 @@
 
       <!-- Tab 2: Production Units -->
       <TabItem Header="Production Units">
-        <StackPanel Margin="10">
-          <TextBlock Text="Production Units UI goes here."/>
+        <StackPanel Margin="10" Spacing="10">
+          <TextBlock Text="Production Units" FontWeight="Bold" Margin="0,0,0,5"/>
+          <TextBlock FontStyle="Italic" FontSize="12" Foreground="Gray" Margin="0,0,0,10"
+                    Text="Note: Units displayed correspond to the selected scenario on the Scenario View tab."/>
+          <ListBox ItemsSource="{Binding Units}" Height="400"/>
         </StackPanel>
       </TabItem>
+
 
       <!-- Tab 3: Comparison & Summary -->
       <TabItem Header="Comparison &amp; Summary">

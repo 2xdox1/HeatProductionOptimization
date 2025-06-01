@@ -42,6 +42,7 @@
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/Avalonia.X11.dll
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/BCrypt.Net-Next.dll
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/CommunityToolkit.Mvvm.dll
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/CsvHelper.dll
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/HarfBuzzSharp.dll
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/HtmlSanitizer.dll
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/LiveChartsCore.dll
@@ -74,4 +75,3 @@
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOpti.D6779B9E.Up2Date
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.genruntimeconfig.cache
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/ref/HeatOptimizerApp.dll
-/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/CsvHelper.dll
