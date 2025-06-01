@@ -6,9 +6,6 @@
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.AssemblyInfo.cs
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.csproj.CoreCompileInputs.cache
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.sourcelink.json
-/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.dll
-/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/refint/HeatOptimizerApp.dll
-/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.pdb
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/HeatOptimizerApp
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/HeatOptimizerApp.deps.json
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/HeatOptimizerApp.runtimeconfig.json
@@ -73,5 +70,8 @@
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/runtimes/win-x64/native/libSkiaSharp.dll
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/bin/Debug/net9.0/runtimes/win-x86/native/libSkiaSharp.dll
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOpti.D6779B9E.Up2Date
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.dll
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/refint/HeatOptimizerApp.dll
+/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.pdb
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/HeatOptimizerApp.genruntimeconfig.cache
 /Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/obj/Debug/net9.0/ref/HeatOptimizerApp.dll

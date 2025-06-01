@@ -37,6 +37,9 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private string selectedScenario = "Scenario1";
 
+    [ObservableProperty]
+    private string selectedSortOption = "Name";
+
     // Collection of production units (strings of names)
     [ObservableProperty]
     private ObservableCollection<string> units = new();
@@ -60,6 +63,9 @@ public partial class MainWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private string? selectedUnitName;
+
+    [ObservableProperty]
+    private bool filterElectricOnly = false;
 
 
     // Heat demand data loaded from CSV for winter
@@ -263,24 +269,40 @@ public partial class MainWindowViewModel : ObservableObject
         return dailyData;
     }
 
-    public void LoadScenarioUnits()
+ public void LoadScenarioUnits()
+{
+    Units.Clear();
+
+    IEnumerable<ProductionUnit> scenarioUnits = SelectedScenario switch
     {
-        Units.Clear();
+        "Scenario1" => GetUnitsForScenario1(),
+        "Scenario2" => GetUnitsForScenario2(),
+        _ => Enumerable.Empty<ProductionUnit>()
+    };
 
-        IEnumerable<ProductionUnit> scenarioUnits = SelectedScenario switch
-        {
-            "Scenario1" => GetUnitsForScenario1(),
-            "Scenario2" => GetUnitsForScenario2(),
-            _ => Enumerable.Empty<ProductionUnit>()
-        };
-
-        foreach (var unit in scenarioUnits)
-        {
-            Units.Add(unit.Name);
-        }
-
-        OnPropertyChanged(nameof(Units));
+    // Apply electricity filter if enabled
+    if (FilterElectricOnly)
+    {
+        scenarioUnits = scenarioUnits.Where(u => u.MaxElectricity.HasValue && u.MaxElectricity.Value > 0);
     }
+
+    // Apply sorting
+    scenarioUnits = SelectedSortOption switch
+    {
+        "Production Cost" => scenarioUnits.OrderBy(u => u.ProductionCost),
+        "CO₂ Emission" => scenarioUnits.OrderBy(u => u.CO2Emission ?? 0),
+        _ => scenarioUnits.OrderBy(u => u.Name), // Default sort by Name
+    };
+
+    Units.Clear(); // Clear existing items before adding new ones
+
+    foreach (var unit in scenarioUnits)
+    {
+        Units.Add(unit.Name);
+    }
+
+    OnPropertyChanged(nameof(Units));
+}
 
     private IEnumerable<ProductionUnit> GetUnitsForScenario1()
     {
@@ -318,5 +340,14 @@ public partial class MainWindowViewModel : ObservableObject
         {
             SelectedUnitDetails = "Details not found.";
         }
+    }
+    partial void OnFilterElectricOnlyChanged(bool value)
+    {
+        LoadScenarioUnits();
+    }
+
+    partial void OnSelectedSortOptionChanged(string value)
+    {
+        LoadScenarioUnits();
     }
 }
