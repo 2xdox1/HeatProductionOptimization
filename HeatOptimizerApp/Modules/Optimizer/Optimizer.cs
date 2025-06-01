@@ -24,15 +24,7 @@ namespace HeatOptimizerApp.Modules.Optimizer
             Console.WriteLine("📂 Loading units from: " + unitPath);
 
             if (!File.Exists(unitPath))
-            {
                 throw new FileNotFoundException("❌ Could not find ProductionUnits.csv next to the heat demand file.", unitPath);
-            }
-
-
-            if (!File.Exists(unitPath))
-            {
-                throw new FileNotFoundException("❌ Could not find ProductionUnits.csv next to the heat demand file.", unitPath);
-            }
 
             _units = File.ReadAllLines(unitPath)
                 .Skip(1)
@@ -49,7 +41,7 @@ namespace HeatOptimizerApp.Modules.Optimizer
                 })
                 .ToList();
 
-            var lines = File.ReadAllLines(path).Skip(1); // skip heat demand header
+            var lines = File.ReadAllLines(path).Skip(1); // Skip heat demand header
             foreach (var line in lines)
             {
                 var parts = line.Split(',');
@@ -61,7 +53,6 @@ namespace HeatOptimizerApp.Modules.Optimizer
 
             Console.WriteLine($"✅ Loaded {_heatDemand.Count} demand values and {_units.Count} units.");
         }
-
 
         public void RunOptimization()
         {
@@ -96,9 +87,12 @@ namespace HeatOptimizerApp.Modules.Optimizer
             Console.WriteLine("Optimization complete.");
         }
 
-        public void SaveData(string path)
+        public void SaveData(string relativePath)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            string fullPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "HeatOptimizerApp", relativePath);
+            fullPath = Path.GetFullPath(fullPath);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
 
             var lines = new List<string> { "Time,Unit,HeatProduced,Cost,CO2,ElectricityProduced,ElectricityConsumed" };
 
@@ -107,10 +101,10 @@ namespace HeatOptimizerApp.Modules.Optimizer
                 lines.Add($"{r.Time},{r.UnitName},{r.HeatProduced},{r.Cost},{r.CO2},{r.ElectricityProduced?.ToString(CultureInfo.InvariantCulture) ?? ""},{r.ElectricityConsumed?.ToString(CultureInfo.InvariantCulture) ?? ""}");
             }
 
-            File.WriteAllLines(path, lines);
+            File.WriteAllLines(fullPath, lines);
 
-            string fullPath = Path.GetFullPath(path);
             Console.WriteLine($" Saved results to: {fullPath}");
         }
+
     }
 }
