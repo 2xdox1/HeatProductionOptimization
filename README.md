@@ -26,7 +26,7 @@ HeatItOn provides heating to ~1600 buildings through a single district heating n
 1. Clone the repository:
 
     ```bash
-    git clone <your-repo-url>
+    git clone <https://github.com/2xdox1/HeatProductionOptimization>
     ```
 
 2. Open the solution in Visual Studio.

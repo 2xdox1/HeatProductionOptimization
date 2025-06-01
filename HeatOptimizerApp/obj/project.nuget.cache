@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "idcMWKm6tVY=",
+  "dgSpecHash": "Ee90e2ud0F0=",
   "success": true,
   "projectFilePath": "/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/HeatOptimizerApp.csproj",
   "expectedPackageFiles": [
@@ -29,8 +29,12 @@
     "/Users/dodo/.nuget/packages/harfbuzzsharp.nativeassets.webassembly/7.3.0.3/harfbuzzsharp.nativeassets.webassembly.7.3.0.3.nupkg.sha512",
     "/Users/dodo/.nuget/packages/harfbuzzsharp.nativeassets.win32/7.3.0.3/harfbuzzsharp.nativeassets.win32.7.3.0.3.nupkg.sha512",
     "/Users/dodo/.nuget/packages/htmlsanitizer/9.0.884/htmlsanitizer.9.0.884.nupkg.sha512",
+    "/Users/dodo/.nuget/packages/livechartscore/2.0.0-rc5.4/livechartscore.2.0.0-rc5.4.nupkg.sha512",
+    "/Users/dodo/.nuget/packages/livechartscore.skiasharpview/2.0.0-rc5.4/livechartscore.skiasharpview.2.0.0-rc5.4.nupkg.sha512",
+    "/Users/dodo/.nuget/packages/livechartscore.skiasharpview.avalonia/2.0.0-rc5.4/livechartscore.skiasharpview.avalonia.2.0.0-rc5.4.nupkg.sha512",
     "/Users/dodo/.nuget/packages/microcom.runtime/0.11.0/microcom.runtime.0.11.0.nupkg.sha512",
     "/Users/dodo/.nuget/packages/skiasharp/2.88.9/skiasharp.2.88.9.nupkg.sha512",
+    "/Users/dodo/.nuget/packages/skiasharp.harfbuzz/2.88.9/skiasharp.harfbuzz.2.88.9.nupkg.sha512",
     "/Users/dodo/.nuget/packages/skiasharp.nativeassets.linux/2.88.9/skiasharp.nativeassets.linux.2.88.9.nupkg.sha512",
     "/Users/dodo/.nuget/packages/skiasharp.nativeassets.macos/2.88.9/skiasharp.nativeassets.macos.2.88.9.nupkg.sha512",
     "/Users/dodo/.nuget/packages/skiasharp.nativeassets.webassembly/2.88.9/skiasharp.nativeassets.webassembly.2.88.9.nupkg.sha512",

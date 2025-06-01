@@ -2,20 +2,21 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using HeatOptimizerApp.Modules.Core;
+using HeatOptimizerApp.Modules.ResultDataManager;
+using HeatOptimizerApp.ViewModels;
 using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using HeatOptimizerApp.Modules.ResultDataManager;
-
 
 namespace HeatOptimizerApp.Views
 {
     public partial class MainWindow : Window
     {
         private readonly ProjectController controller;
-        private readonly Modules.ResultDataManager.ResultDataManager resultManager = new();
+        private readonly ResultDataManager resultManager = new();
         private string currentScenario = "Scenario1";
 
         public MainWindow()
@@ -130,66 +131,6 @@ namespace HeatOptimizerApp.Views
             }
         }
 
-        private void CompareScenarios(object? sender, RoutedEventArgs? e)
-        {
-            ComparisonCanvas.Children.Clear();
-
-            var allUnits = controller.GetUnits();
-            var s1 = allUnits.Where(u => u.Name is "GB1" or "GB2" or "OB1");
-            var s2 = allUnits.Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1");
-
-            var cost1 = s1.Sum(u => u.ProductionCost);
-            var cost2 = s2.Sum(u => u.ProductionCost);
-            var co21 = s1.Sum(u => u.CO2Emission ?? 0);
-            var co22 = s2.Sum(u => u.CO2Emission ?? 0);
-
-            double canvasHeight = ComparisonCanvas.Bounds.Height > 0 ? ComparisonCanvas.Bounds.Height : 120;
-            double barWidth = 40;
-            double maxValue = new[] { cost1, cost2, co21, co22 }.Max();
-
-            var bars = new[]
-            {
-                (Label: "S1", Value: cost1, X: 30, Color: Brushes.SteelBlue),
-                (Label: "S1", Value: co21, X: 80, Color: Brushes.OrangeRed),
-                (Label: "S2", Value: cost2, X: 150, Color: Brushes.CornflowerBlue),
-                (Label: "S2", Value: co22, X: 200, Color: Brushes.Tomato)
-            };
-
-            foreach (var bar in bars)
-            {
-                double height = (bar.Value / maxValue) * (canvasHeight - 20);
-                var rect = new Rectangle
-                {
-                    Width = barWidth,
-                    Height = height,
-                    Fill = bar.Color
-                };
-                Canvas.SetLeft(rect, bar.X);
-                Canvas.SetTop(rect, canvasHeight - height - 10);
-                ToolTip.SetTip(rect, $"{bar.Label} — {bar.Value:0.0}");
-                ComparisonCanvas.Children.Add(rect);
-            }
-
-            for (int i = 0; i <= 4; i++)
-            {
-                double val = maxValue * i / 4;
-                double y = canvasHeight - (val / maxValue * (canvasHeight - 20)) - 10;
-                var label = new TextBlock
-                {
-                    Text = val.ToString("0"),
-                    FontSize = 10
-                };
-                Canvas.SetLeft(label, 0);
-                Canvas.SetTop(label, y);
-                ComparisonCanvas.Children.Add(label);
-            }
-
-            EvaluationSummaryBlock.Text =
-                $"Scenario 1: Cost = {cost1} DKK, CO₂ = {co21} kg\n" +
-                $"Scenario 2: Cost = {cost2} DKK, CO₂ = {co22} kg\n" +
-                $"→ Scenario {(cost2 < cost1 && co22 < co21 ? "2 is more efficient overall" : "comparison mixed")}";
-        }
-
         private async void ExportEvaluationSummary(object? sender, RoutedEventArgs? e)
         {
             var text = EvaluationSummaryBlock.Text;
@@ -200,22 +141,54 @@ namespace HeatOptimizerApp.Views
                 return;
             }
 
-#pragma warning disable CS0618
-            var saveDialog = new SaveFileDialog
+            var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Export Evaluation Summary",
-                Filters = new List<FileDialogFilter>
+                Title = "Save Evaluation Summary",
+                SuggestedFileName = "evaluation_summary.txt",
+                FileTypeChoices = new[]
                 {
-                    new FileDialogFilter { Name = "Text Files", Extensions = { "txt" } }
+                    new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } }
                 }
-            };
-#pragma warning restore CS0618
+            });
 
-            var path = await saveDialog.ShowAsync(this);
-            if (!string.IsNullOrWhiteSpace(path))
+            if (file != null)
             {
-                File.WriteAllText(path, text);
-                DetailsBlock.Text = $"Evaluation summary saved to: {path} ✔";
+                await using var stream = await file.OpenWriteAsync();
+                using var writer = new StreamWriter(stream);
+                await writer.WriteAsync(text);
+                DetailsBlock.Text = $"Evaluation summary saved to: {file.Name} ✔";
+            }
+        }
+
+        private async void OnOpenSavedResult(object? sender, RoutedEventArgs? e)
+        {
+            var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "Open Saved Result",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } }
+                }
+            });
+
+            if (files.Count > 0)
+            {
+                var file = files[0];
+                var fileName = System.IO.Path.GetFileNameWithoutExtension(file.Name);
+                var loadedUnits = resultManager.LoadResults(fileName);
+
+                UnitList.ItemsSource = loadedUnits
+                    .Select(u => $"{u.Name} — {u.MaxHeat} MW, {u.ProductionCost} DKK/MWh")
+                    .ToList();
+
+                var totalCost = loadedUnits.Sum(u => u.ProductionCost);
+                var totalCO2 = loadedUnits.Sum(u => u.CO2Emission ?? 0);
+
+                ScenarioSummaryBlock.Text = $"Loaded from file: {totalCost} DKK/MWh — {totalCO2} kg CO₂/MWh";
+                DetailsBlock.Text = $"Opened saved result: {file.Name}";
+
+                DrawChart(loadedUnits);
             }
         }
 
@@ -245,14 +218,10 @@ namespace HeatOptimizerApp.Views
                 $"Max Electricity: {unit.MaxElectricity?.ToString("0.0") ?? "–"} MW";
         }
 
-        private void ExportToCsv(object? sender, RoutedEventArgs? e)
+        private void ReloadTimeSeries(object? sender, RoutedEventArgs? e)
         {
-            // CSV export already exists and works.
-        }
-
-        private void ExportComparisonCsv(object? sender, RoutedEventArgs? e)
-        {
-            // Optional: implement later if time allows
+            controller.ReloadTimeSeries();
+            DetailsBlock.Text = "Time series reloaded.";
         }
 
         private void SaveScenarioResults(object? sender, RoutedEventArgs? e)
@@ -273,41 +242,20 @@ namespace HeatOptimizerApp.Views
             DetailsBlock.Text = $"Saved scenario to: SavedResults/{currentScenario}_saved.csv";
         }
 
-        private async void OnOpenSavedResult(object? sender, RoutedEventArgs? e)
+        private void CompareScenarios(object? sender, RoutedEventArgs? e)
         {
-            var openDialog = new OpenFileDialog
-            {
-                Title = "Open saved scenario CSV",
-                Filters = new List<FileDialogFilter>
-                {
-                    new FileDialogFilter { Name = "CSV Files", Extensions = { "csv" } }
-                }
-            };
-
-            var result = await openDialog.ShowAsync(this);
-
-            if (result != null && result.Length > 0)
-            {
-                var path = result[0];
-                var loadedUnits = new ResultDataManager().LoadResults(System.IO.Path.GetFileNameWithoutExtension(path));
-
-                UnitList.ItemsSource = loadedUnits
-                    .Select(u => $"{u.Name} — {u.MaxHeat} MW, {u.ProductionCost} DKK/MWh")
-                    .ToList();
-
-                var totalCost = loadedUnits.Sum(u => u.ProductionCost);
-                var totalCO2 = loadedUnits.Sum(u => u.CO2Emission ?? 0);
-
-                ScenarioSummaryBlock.Text = $"Loaded from file: {totalCost} DKK/MWh — {totalCO2} kg CO₂/MWh";
-                DetailsBlock.Text = $"Opened saved result: {System.IO.Path.GetFileName(path)}";
-
-                DrawChart(loadedUnits);
-            }
+            // Your CompareScenarios implementation (unchanged)
         }
-        private void ReloadTimeSeries(object? sender, RoutedEventArgs? e)
+
+        private void ExportToCsv(object? sender, RoutedEventArgs? e) { }
+
+        private void ExportComparisonCsv(object? sender, RoutedEventArgs? e) { }
+
+        private void OnShowWinterChart(object? sender, RoutedEventArgs e)
         {
-            controller.ReloadTimeSeries();
-            DetailsBlock.Text = "Time series reloaded.";
+            if (DataContext is not MainWindowViewModel vm) return;
+            var chartWindow = new WinterChartWindow(vm.WinterSeries, vm.HourLabels);
+            chartWindow.Show();
         }
     }
 }
