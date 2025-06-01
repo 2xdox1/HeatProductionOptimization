@@ -98,6 +98,22 @@
         </ScrollViewer>
       </TabItem>
 
+      <TabItem Header="Summary">
+      
+      <ScrollViewer>
+        <StackPanel Margin="20" Spacing="8">
+          <TextBlock Text="Scenario Summary" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+          <TextBlock Text="{Binding Summary.FormattedHeat}" />
+          <TextBlock Text="{Binding Summary.FormattedCost}" />
+          <TextBlock Text="{Binding Summary.FormattedCO2}" />
+          <TextBlock Text="{Binding Summary.FormattedGas}" />
+          <TextBlock Text="{Binding Summary.FormattedOil}" />
+          <TextBlock Text="{Binding Summary.FormattedElectricity}" />
+        </StackPanel>
+      </ScrollViewer>
+    </TabItem>
+
+
       <!-- Tab 2: Comparison & Summary -->
       <TabItem Header="Comparison &amp; Summary">
         <StackPanel Margin="10">

@@ -1,18 +1,19 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using HeatOptimizerApp.Models;
-using LiveChartsCore;
-using LiveChartsCore.Measure;               // For Axis
-using LiveChartsCore.Drawing;               // For SolidColorPaint
+﻿using LiveChartsCore;
+using LiveChartsCore.Measure;
+using LiveChartsCore.Drawing;   
+using SkiaSharp;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
-using SkiaSharp;                            // For SKColors
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using HeatOptimizerApp.Modules.AssetManager;
+using HeatOptimizerApp.Models;
 using HeatOptimizerApp.Modules.Core;
+using HeatOptimizerApp.Modules.AssetManager;
+using HeatOptimizerApp.Modules.ResultDataManager;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace HeatOptimizerApp.ViewModels;
 
@@ -81,6 +82,8 @@ public partial class MainWindowViewModel : ObservableObject
             UpdateChart();
         }
     }
+
+    public List<ProductionUnit> CurrentScenarioUnits { get; set; } = new();
 
     // Heat demand data loaded from CSV for summer
     private List<TimeSeriesPoint> summerHeatDemandData = new();
@@ -269,40 +272,45 @@ public partial class MainWindowViewModel : ObservableObject
         return dailyData;
     }
 
- public void LoadScenarioUnits()
-{
-    Units.Clear();
-
-    IEnumerable<ProductionUnit> scenarioUnits = SelectedScenario switch
+    public void LoadScenarioUnits()
     {
-        "Scenario1" => GetUnitsForScenario1(),
-        "Scenario2" => GetUnitsForScenario2(),
-        _ => Enumerable.Empty<ProductionUnit>()
-    };
+        Units.Clear();
 
-    // Apply electricity filter if enabled
-    if (FilterElectricOnly)
-    {
-        scenarioUnits = scenarioUnits.Where(u => u.MaxElectricity.HasValue && u.MaxElectricity.Value > 0);
+        IEnumerable<ProductionUnit> scenarioUnits = SelectedScenario switch
+        {
+            "Scenario1" => GetUnitsForScenario1(),
+            "Scenario2" => GetUnitsForScenario2(),
+            _ => Enumerable.Empty<ProductionUnit>()
+        };
+
+        // Apply electricity filter if enabled
+        if (FilterElectricOnly)
+        {
+            scenarioUnits = scenarioUnits.Where(u => u.MaxElectricity.HasValue && u.MaxElectricity.Value > 0);
+        }
+
+        // Apply sorting
+        scenarioUnits = SelectedSortOption switch
+        {
+            "Production Cost" => scenarioUnits.OrderBy(u => u.ProductionCost),
+            "CO₂ Emission" => scenarioUnits.OrderBy(u => u.CO2Emission ?? 0),
+            _ => scenarioUnits.OrderBy(u => u.Name), // Default sort by Name
+        };
+
+        // Store full unit objects
+        CurrentScenarioUnits = scenarioUnits.ToList();
+
+        // Add names to UI list
+        foreach (var unit in CurrentScenarioUnits)
+        {
+            Units.Add(unit.Name);
+        }
+
+        OnPropertyChanged(nameof(Units));
+
+        // 🧠 Trigger summary update
+        UpdateSummary(CurrentScenarioUnits);
     }
-
-    // Apply sorting
-    scenarioUnits = SelectedSortOption switch
-    {
-        "Production Cost" => scenarioUnits.OrderBy(u => u.ProductionCost),
-        "CO₂ Emission" => scenarioUnits.OrderBy(u => u.CO2Emission ?? 0),
-        _ => scenarioUnits.OrderBy(u => u.Name), // Default sort by Name
-    };
-
-    Units.Clear(); // Clear existing items before adding new ones
-
-    foreach (var unit in scenarioUnits)
-    {
-        Units.Add(unit.Name);
-    }
-
-    OnPropertyChanged(nameof(Units));
-}
 
     private IEnumerable<ProductionUnit> GetUnitsForScenario1()
     {
@@ -350,4 +358,28 @@ public partial class MainWindowViewModel : ObservableObject
     {
         LoadScenarioUnits();
     }
+
+    private SummaryMetrics _summary = new();
+    public SummaryMetrics Summary
+    {
+        get => _summary;
+        set
+        {
+            _summary = value;
+            OnPropertyChanged(nameof(Summary));
+        }
+    }
+    public void UpdateSummary(List<ProductionUnit> units)
+    {
+        Summary = new SummaryMetrics
+        {
+            TotalMaxHeat = units.Sum(u => u.MaxHeat),
+            TotalCost = units.Sum(u => u.ProductionCost),
+            TotalCO2 = units.Sum(u => u.CO2Emission ?? 0),
+            TotalGas = units.Sum(u => u.GasConsumption ?? 0),
+            TotalOil = units.Sum(u => u.OilConsumption ?? 0),
+            TotalElectricityCapacity = units.Sum(u => u.MaxElectricity ?? 0),
+        };
+    }
+
 }
