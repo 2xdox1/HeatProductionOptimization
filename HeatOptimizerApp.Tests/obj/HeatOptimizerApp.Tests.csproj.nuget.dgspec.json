@@ -153,6 +153,10 @@
               "target": "Package",
               "version": "[8.2.1, )"
             },
+            "CsvHelper": {
+              "target": "Package",
+              "version": "[33.0.1, )"
+            },
             "HtmlSanitizer": {
               "target": "Package",
               "version": "[9.0.884, )"
@@ -160,6 +164,10 @@
             "LiveChartsCore.SkiaSharpView.Avalonia": {
               "target": "Package",
               "version": "[2.0.0-rc5.4, )"
+            },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[3.119.0, )"
             }
           },
           "imports": [
