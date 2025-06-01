@@ -26,8 +26,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public List<Axis> XAxes { get; set; } = new();
     public List<Axis> YAxes { get; set; } = new();
+
     public List<Axis> XAxesSummer { get; set; } = new();
     public List<Axis> YAxesSummer { get; set; } = new();
+
     public List<Axis> XAxesComparison { get; set; } = new();
     public List<Axis> YAxesComparison { get; set; } = new();
 
@@ -116,9 +118,9 @@ public partial class MainWindowViewModel : ViewModelBase
         YAxes.Add(new Axis { Name = "Heat Produced (MW)" });
     }
 
-    private void GenerateMockSummerChart()
+    public void GenerateMockSummerChart()
     {
-        var mockData = GenerateMockData("Summer");
+        var mockData = GenerateMockSummerData();
         var units = mockData.Select(d => d.UnitName).Distinct();
 
         SummerSeries.Clear();
@@ -148,6 +150,29 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             new Axis { Name = "Heat Produced (MW)" }
         };
+
+        Console.WriteLine("Summer chart generated with units: " + string.Join(", ", units));
+    }
+
+    private List<HourlyHeatProduction> GenerateMockSummerData()
+    {
+        var units = new[] { "GB2", "HP1", "OB1" };
+        var data = new List<HourlyHeatProduction>();
+        var rand = new Random();
+
+        for (int hour = 0; hour < 24; hour++)
+        {
+            var total = 8 + rand.NextDouble() * 4; // Lower total in summer
+            var gb2 = 0.4 + rand.NextDouble() * 0.2;
+            var hp1 = 0.3 + rand.NextDouble() * 0.2;
+            var ob1 = 1.0 - gb2 - hp1;
+
+            data.Add(new HourlyHeatProduction { Hour = hour, UnitName = "GB2", HeatProduced = Math.Round(total * gb2, 2) });
+            data.Add(new HourlyHeatProduction { Hour = hour, UnitName = "HP1", HeatProduced = Math.Round(total * hp1, 2) });
+            data.Add(new HourlyHeatProduction { Hour = hour, UnitName = "OB1", HeatProduced = Math.Round(total * ob1, 2) });
+        }
+
+        return data;
     }
 
     private List<HourlyHeatProduction> GenerateMockData(string season)

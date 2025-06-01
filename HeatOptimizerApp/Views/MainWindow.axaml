@@ -20,7 +20,6 @@
         <Button Content="Reload Time Series" Click="ReloadTimeSeries"/>
         <Button Content="Show Summer Chart" Click="OnShowSummerChart"/>
         <Button Content="Show Winter Chart" Click="OnShowWinterChart"/>
-        <Button Content="Show Summer Chart" Click="OnShowSummerChart"/>
       </StackPanel>
 
       <!-- Filters -->
