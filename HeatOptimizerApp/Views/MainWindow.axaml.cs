@@ -273,7 +273,7 @@ namespace HeatOptimizerApp.Views
         private void OnShowSummerChart(object? sender, RoutedEventArgs e)
         {
             if (DataContext is not MainWindowViewModel vm) return;
-            var chartWindow = new SummerChartWindow(vm);
+            var chartWindow = new SummerChartWindow(vm.SummerSeries, vm.HourLabels);
             chartWindow.Show();
         }
 
