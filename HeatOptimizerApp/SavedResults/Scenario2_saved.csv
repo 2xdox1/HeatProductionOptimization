@@ -1,7 +1,1 @@
-Name,MaxHeat,ProductionCost,CO2Emission,GasConsumption,OilConsumption,MaxElectricity
-GB1,4,520,175,0.9,,
-OB1,4,670,330,,1.5,
-GM1,3.5,990,650,1.8,,2.6
-HP1,6,60,,,,
-
-TOTAL,,2240,1155,,,
+Time,Unit,HeatProduced,Cost,CO2,ElectricityProduced,ElectricityConsumed

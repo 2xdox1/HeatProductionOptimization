@@ -76,6 +76,8 @@ public partial class MainWindowViewModel : ObservableObject
     public Axis[] SimulatedXAxis { get; set; } = Array.Empty<Axis>();
     public Axis[] SimulatedYAxis { get; set; } = Array.Empty<Axis>();
 
+    private Dictionary<string, List<SimulatedResult>> ScenarioData { get; set; } = new();
+
     public ICommand SaveScenarioResultsCommand { get; }
     public ICommand LoadSavedResultCommand { get; }
     public ICommand ReloadTimeSeriesCommand { get; }
@@ -141,6 +143,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
+
         // ❗ Prevent LiveCharts from crashing by setting empty axes early
         SimulatedSeries = Array.Empty<ISeries>();
         SimulatedXAxis = new Axis[] { new Axis { Labels = new[] { " " }, Name = "Time" } };
@@ -524,20 +527,49 @@ public partial class MainWindowViewModel : ObservableObject
     
     public void SaveScenarioToCsv()
     {
-        Console.WriteLine("SaveScenarioToCsv not yet implemented.");
-        // TODO: implement saving logic
+        var scenario = SelectedScenario;
+            if (string.IsNullOrEmpty(scenario) || !ScenarioData.TryGetValue(scenario, out var data))
+            {
+                Console.WriteLine("❌ No scenario data to save.");
+                return;
+            }
+
+            var path = $"SavedResults/{scenario}_saved.csv";
+            var lines = new List<string> { "Time,Unit,HeatProduced,Cost,CO2,ElectricityProduced,ElectricityConsumed" };
+            foreach (var r in data)
+            {
+                lines.Add($"{r.Time},{r.UnitName},{r.HeatProduced},{r.Cost},{r.CO2},{r.ElectricityProduced?.ToString() ?? ""},{r.ElectricityConsumed?.ToString() ?? ""}");
+            }
+
+            File.WriteAllLines(path, lines);
+            Console.WriteLine($" Scenario saved to {path}");
     }
 
     public void LoadScenarioFromCsv()
     {
-        Console.WriteLine("LoadScenarioFromCsv not yet implemented.");
-        // TODO: implement loading logic
-    }
+        var scenario = SelectedScenario;
+        var path = $"SavedResults/{scenario}_saved.csv";
 
+        if (!File.Exists(path))
+        {
+            Console.WriteLine($"❌ File not found: {path}");
+            return;
+        }
+
+       var results = SimulatedResultLoader.LoadSimulatedResults(path);
+        ScenarioData[scenario] = results;
+        Units = new ObservableCollection<string>(
+        results.Select(r => r.UnitName).Distinct());
+
+        OnPropertyChanged(nameof(Units));
+        UpdateChart();
+
+        Console.WriteLine($"✅ Loaded scenario data from {path}");
+    }
     public void ReloadTimeSeries()
     {
-        Console.WriteLine("ReloadTimeSeries not yet implemented.");
-        // TODO: implement reloading logic
+        Console.WriteLine(" Reloading chart from current loaded data...");
+        UpdateChart();
     }
 
 }
