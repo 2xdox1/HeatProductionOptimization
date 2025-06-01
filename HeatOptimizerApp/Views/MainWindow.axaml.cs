@@ -244,10 +244,22 @@ namespace HeatOptimizerApp.Views
 
         private void CompareScenarios(object? sender, RoutedEventArgs? e)
         {
-            // Your CompareScenarios implementation (unchanged)
-        }
+            var allUnits = controller.GetUnits();
+            var s1 = allUnits.Where(u => u.Name is "GB1" or "GB2" or "OB1").ToList();
+            var s2 = allUnits.Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1").ToList();
 
-        private void ExportToCsv(object? sender, RoutedEventArgs? e) { }
+            var cost1 = s1.Sum(u => u.ProductionCost);
+            var cost2 = s2.Sum(u => u.ProductionCost);
+            var co21 = s1.Sum(u => u.CO2Emission ?? 0);
+            var co22 = s2.Sum(u => u.CO2Emission ?? 0);
+
+            EvaluationSummaryBlock.Text =
+                $"Scenario 1: Cost = {cost1:0.0} DKK, CO₂ = {co21:0.0} kg\n" +
+                $"Scenario 2: Cost = {cost2:0.0} DKK, CO₂ = {co22:0.0} kg\n" +
+                $"→ Scenario {(cost2 < cost1 && co22 < co21 ? "2 is more efficient overall" : "comparison mixed")}";
+
+            (DataContext as MainWindowViewModel)?.GenerateScenarioComparisonChart();
+        }
 
         private void ExportComparisonCsv(object? sender, RoutedEventArgs? e) { }
 
