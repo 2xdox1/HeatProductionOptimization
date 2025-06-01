@@ -26,3 +26,9 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/Views/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/Views/SummerChartWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/Views/WinterChartWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

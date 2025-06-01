@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+        xmlns:vm="clr-namespace:HeatOptimizerApp.ViewModels"
+        x:Class="HeatOptimizerApp.Views.WinterChartWindow"
+        Width="700"
+        Height="450"
+        Title="Winter Heat Production (Hourly)">
+  <Grid>
+    <lvc:CartesianChart Series="{Binding WinterSeries}"
+                        XAxes="{Binding XAxes}"
+                        YAxes="{Binding YAxes}"
+                        LegendPosition="Right"/>
+  </Grid>
+</Window>

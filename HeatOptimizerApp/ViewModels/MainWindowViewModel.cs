@@ -18,12 +18,16 @@ public partial class MainWindowViewModel : ViewModelBase
     private ObservableCollection<ProductionUnit> units = new();
 
     public ObservableCollection<ISeries> WinterSeries { get; set; } = new();
+    public ObservableCollection<ISeries> SummerSeries { get; set; } = new();
     public ObservableCollection<ISeries> ScenarioComparisonSeries { get; set; } = new();
+
     public List<string> HourLabels { get; set; } = Enumerable.Range(0, 24).Select(i => i.ToString()).ToList();
     public List<string> ComparisonLabels { get; set; } = new() { "S1", "S2" };
 
     public List<Axis> XAxes { get; set; } = new();
     public List<Axis> YAxes { get; set; } = new();
+    public List<Axis> XAxesSummer { get; set; } = new();
+    public List<Axis> YAxesSummer { get; set; } = new();
     public List<Axis> XAxesComparison { get; set; } = new();
     public List<Axis> YAxesComparison { get; set; } = new();
 
@@ -39,8 +43,9 @@ public partial class MainWindowViewModel : ViewModelBase
             Units.Add(unit);
         }
 
-        GenerateMockWinterChart(); // show chart by default
-        GenerateScenarioComparisonChart(); // preload scenario comparison
+        GenerateMockWinterChart();
+        GenerateMockSummerChart();
+        GenerateScenarioComparisonChart();
     }
 
     public void GenerateScenarioComparisonChart()
@@ -72,25 +77,18 @@ public partial class MainWindowViewModel : ViewModelBase
 
         XAxesComparison = new()
         {
-            new Axis
-            {
-                Name = "Scenario",
-                Labels = ComparisonLabels
-            }
+            new Axis { Name = "Scenario", Labels = ComparisonLabels }
         };
 
         YAxesComparison = new()
         {
-            new Axis
-            {
-                Name = "Value (per MWh)"
-            }
+            new Axis { Name = "Value (per MWh)" }
         };
     }
 
     private void GenerateMockWinterChart()
     {
-        var mockData = GenerateMockWinterData();
+        var mockData = GenerateMockData("Winter");
         var units = mockData.Select(d => d.UnitName).Distinct();
 
         WinterSeries.Clear();
@@ -112,29 +110,56 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         XAxes.Clear();
-        XAxes.Add(new Axis
-        {
-            Name = "Hour",
-            Labels = HourLabels
-        });
+        XAxes.Add(new Axis { Name = "Hour", Labels = HourLabels });
 
         YAxes.Clear();
-        YAxes.Add(new Axis
-        {
-            Name = "Heat Produced (MW)"
-        });
+        YAxes.Add(new Axis { Name = "Heat Produced (MW)" });
     }
 
-    private List<HourlyHeatProduction> GenerateMockWinterData()
+    private void GenerateMockSummerChart()
+    {
+        var mockData = GenerateMockData("Summer");
+        var units = mockData.Select(d => d.UnitName).Distinct();
+
+        SummerSeries.Clear();
+
+        foreach (var unit in units)
+        {
+            var values = mockData
+                .Where(d => d.UnitName == unit)
+                .OrderBy(d => d.Hour)
+                .Select(d => d.HeatProduced)
+                .ToArray();
+
+            SummerSeries.Add(new ColumnSeries<double>
+            {
+                Name = unit,
+                Values = values,
+                MaxBarWidth = 18
+            });
+        }
+
+        XAxesSummer = new()
+        {
+            new Axis { Name = "Hour", Labels = HourLabels }
+        };
+
+        YAxesSummer = new()
+        {
+            new Axis { Name = "Heat Produced (MW)" }
+        };
+    }
+
+    private List<HourlyHeatProduction> GenerateMockData(string season)
     {
         var units = new[] { "GB1", "GM1", "OB1" };
         var data = new List<HourlyHeatProduction>();
-        var rand = new Random();
+        var rand = new Random(season == "Summer" ? 2 : 1); // use different seed for different data
 
         for (int hour = 0; hour < 24; hour++)
         {
-            var total = 10 + rand.NextDouble() * 5;
-            var gb1 = 0.5 + rand.NextDouble() * 0.2;
+            var total = (season == "Summer" ? 5 : 10) + rand.NextDouble() * 3;
+            var gb1 = 0.4 + rand.NextDouble() * 0.2;
             var gm1 = 0.3 + rand.NextDouble() * 0.1;
             var ob1 = 1.0 - gb1 - gm1;
 
