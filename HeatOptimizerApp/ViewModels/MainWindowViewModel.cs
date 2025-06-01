@@ -76,6 +76,13 @@ public partial class MainWindowViewModel : ObservableObject
     public Axis[] SimulatedXAxis { get; set; } = Array.Empty<Axis>();
     public Axis[] SimulatedYAxis { get; set; } = Array.Empty<Axis>();
 
+    public ICommand SaveScenarioResultsCommand { get; }
+    public ICommand LoadSavedResultCommand { get; }
+    public ICommand ReloadTimeSeriesCommand { get; }
+    public ICommand LoadWinterDataCommand { get; }
+    public ICommand LoadSummerDataCommand { get; }
+
+
     // Heat demand data loaded from CSV for winter
     private List<TimeSeriesPoint> winterHeatDemandData = new();
     public List<TimeSeriesPoint> WinterHeatDemandData
@@ -138,7 +145,7 @@ public partial class MainWindowViewModel : ObservableObject
         SimulatedSeries = Array.Empty<ISeries>();
         SimulatedXAxis = new Axis[] { new Axis { Labels = new[] { " " }, Name = "Time" } };
         SimulatedYAxis = new Axis[] { new Axis { Name = "Heat (MWh)" } };
-        
+
         // Initialize controller
         controller.RunProject();
 
@@ -149,6 +156,12 @@ public partial class MainWindowViewModel : ObservableObject
         LoadScenarioUnits(); // Load initial scenario units
 
         UpdateChart();
+
+        SaveScenarioResultsCommand = new RelayCommand(() => Console.WriteLine("Save scenario results clicked"));
+        LoadSavedResultCommand = new RelayCommand(() => Console.WriteLine("Load saved result clicked"));
+        ReloadTimeSeriesCommand = new RelayCommand(() => Console.WriteLine("Reload time series clicked"));
+        LoadWinterDataCommand = new RelayCommand(() => Console.WriteLine("Load winter data clicked"));
+        LoadSummerDataCommand = new RelayCommand(() => Console.WriteLine("Load summer data clicked"));
     }
 
     // Ensure mutual exclusivity for toggles and update chart accordingly
@@ -393,8 +406,6 @@ public partial class MainWindowViewModel : ObservableObject
             TotalElectricityCapacity = units.Sum(u => u.MaxElectricity ?? 0),
         };
     }
-    public ICommand LoadScenarioCommand => new RelayCommand(ExecuteLoadScenario);
-    public ICommand LoadSimulatedChartCommand => new RelayCommand(LoadSimulatedChart);
 
     private void ExecuteLoadScenario()
     {
@@ -430,101 +441,103 @@ public partial class MainWindowViewModel : ObservableObject
             TotalElectricityCapacity = units.Sum(u => u.MaxElectricity ?? 0)
         };
     }
-        public void LoadSimulatedChart()
+    public void LoadSimulatedChart()
+    {
+        var path = "SavedResults/scenario2_simulated.csv"; // Adjust if needed
+        if (!File.Exists(path))
         {
-            try
-            {
-                string path = "SavedResults/scenario1_simulated.csv";
-
-                if (!File.Exists(path))
-                {
-                    Console.WriteLine($"❌ File not found: {path}");
-                    SetEmptySimulatedChart("❌ Simulated file not found");
-                    return;
-                }
-
-                var results = SimulatedResultLoader.LoadSimulatedResults(path);
-                if (results == null || results.Count == 0)
-                {
-                    Console.WriteLine("⚠️ Simulated file was empty or failed to load.");
-                    SetEmptySimulatedChart("⚠️ No simulated results available");
-                    return;
-                }
-
-                Console.WriteLine($"✅ Loaded {results.Count} simulated entries.");
-
-                var grouped = results
-                    .GroupBy(r => r.Time)
-                    .OrderBy(g => g.Key)
-                    .Select(g => g.Sum(r => r.HeatProduced))
-                    .ToArray();
-
-                var labels = results
-                    .GroupBy(r => r.Time)
-                    .OrderBy(g => g.Key)
-                    .Select(g => g.Key.ToString("HH:mm"))
-                    .ToArray();
-
-                if (grouped.Length == 0 || labels.Length == 0 || grouped.Length != labels.Length)
-                {
-                    Console.WriteLine($"❌ Inconsistent chart data. grouped: {grouped.Length}, labels: {labels.Length}");
-                    SetEmptySimulatedChart("❌ Invalid chart data");
-                    return;
-                }
-
-                SimulatedSeries = new ISeries[]
-                {
-                    new LineSeries<double>
-                    {
-                        Values = grouped,
-                        Name = "Total Heat Produced",
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.OrangeRed, 2)
-                    }
-                };
-
-                SimulatedXAxis = new Axis[]
-                {
-                    new Axis
-                    {
-                        Labels = labels,
-                        LabelsRotation = 45,
-                        Name = "Time"
-                    }
-                };
-
-                SimulatedYAxis = new Axis[]
-                {
-                    new Axis
-                    {
-                        Name = "Heat (MWh)"
-                    }
-                };
-
-                ChartTitle = "Simulated Heat Production (Scenario 1)";
-
-                OnPropertyChanged(nameof(ChartTitle));
-                OnPropertyChanged(nameof(SimulatedSeries));
-                OnPropertyChanged(nameof(SimulatedXAxis));
-                OnPropertyChanged(nameof(SimulatedYAxis));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("❌ Exception in LoadSimulatedChart:\n" + ex);
-                SetEmptySimulatedChart("❌ Exception occurred");
-            }
+            Console.WriteLine($"❌ File not found: {path}");
+            return;
         }
 
-        private void SetEmptySimulatedChart(string message)
-        {
-            SimulatedSeries = Array.Empty<ISeries>();
-            SimulatedXAxis = new[] { new Axis { Labels = new[] { "" }, Name = "Time" } };
-            SimulatedYAxis = new[] { new Axis { Name = "Heat (MWh)" } };
-            ChartTitle = message;
+        var results = SimulatedResultLoader.LoadSimulatedResults(path);
 
-            OnPropertyChanged(nameof(SimulatedSeries));
-            OnPropertyChanged(nameof(SimulatedXAxis));
-            OnPropertyChanged(nameof(SimulatedYAxis));
-            OnPropertyChanged(nameof(ChartTitle));
-        }
+        var grouped = results
+            .GroupBy(r => r.Time)
+            .OrderBy(g => g.Key)
+            .Select(g => g.Sum(r => r.HeatProduced))
+            .ToArray();
+
+        var groupedTimestamps = results
+            .GroupBy(r => r.Time)
+            .OrderBy(g => g.Key)
+            .Select(g => g.Key)
+            .ToList();
+
+        SimulatedSeries = new ISeries[]
+        {
+                new LineSeries<double>
+                {
+                    Values = grouped,
+                    Name = "Total Heat Produced",
+                    GeometrySize = 4,
+                    Stroke = new SolidColorPaint(SKColors.OrangeRed, 2),
+                    Fill = null
+                }
+        };
+
+        SimulatedXAxis = new Axis[]
+        {
+                new Axis
+                {
+                    Name = "Time",
+                    LabelsRotation = 45,
+                    Labeler = value =>
+                    {
+                        int index = (int)Math.Round(value);
+                        if (index >= 0 && index < groupedTimestamps.Count)
+                            return groupedTimestamps[index].ToString("HH:mm");
+                        return "";
+                    },
+                    MinStep = 1,
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+                }
+        };
+
+        SimulatedYAxis = new Axis[]
+        {
+                new Axis
+                {
+                    Name = "Heat (MWh)",
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+                }
+        };
+
+        OnPropertyChanged(nameof(SimulatedSeries));
+        OnPropertyChanged(nameof(SimulatedXAxis));
+        OnPropertyChanged(nameof(SimulatedYAxis));
+    }
+
+
+    private void SetEmptySimulatedChart(string message)
+    {
+        SimulatedSeries = Array.Empty<ISeries>();
+        SimulatedXAxis = new[] { new Axis { Labels = new[] { "" }, Name = "Time" } };
+        SimulatedYAxis = new[] { new Axis { Name = "Heat (MWh)" } };
+        ChartTitle = message;
+
+        OnPropertyChanged(nameof(SimulatedSeries));
+        OnPropertyChanged(nameof(SimulatedXAxis));
+        OnPropertyChanged(nameof(SimulatedYAxis));
+        OnPropertyChanged(nameof(ChartTitle));
+    }
+    
+    public void SaveScenarioToCsv()
+    {
+        Console.WriteLine("SaveScenarioToCsv not yet implemented.");
+        // TODO: implement saving logic
+    }
+
+    public void LoadScenarioFromCsv()
+    {
+        Console.WriteLine("LoadScenarioFromCsv not yet implemented.");
+        // TODO: implement loading logic
+    }
+
+    public void ReloadTimeSeries()
+    {
+        Console.WriteLine("ReloadTimeSeries not yet implemented.");
+        // TODO: implement reloading logic
+    }
+
 }

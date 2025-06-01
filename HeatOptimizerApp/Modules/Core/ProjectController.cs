@@ -23,7 +23,8 @@ namespace HeatOptimizerApp.Modules.Core
             _assetManager.LoadData("./Data/ProductionUnits.csv");
             _sourceDataManager.LoadData("./Data/TimeSeries_WinterSummer.csv");
 
-            _optimizer.LoadData("");         // Placeholder
+            string summerPath = "Data/summer.csv";
+            _optimizer.LoadData(summerPath);
             _optimizer.RunOptimization();
 
             _dataVisualization.LoadData(""); // Placeholder

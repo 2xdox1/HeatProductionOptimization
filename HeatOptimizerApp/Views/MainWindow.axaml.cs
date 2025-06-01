@@ -21,7 +21,7 @@ namespace HeatOptimizerApp.Views
             if (DataContext is MainWindowViewModel vm)
             {
                 vm.SelectedScenario = "Scenario1";
-                ReloadScenario();
+                vm.LoadScenarioUnits();
             }
         }
 
@@ -30,19 +30,11 @@ namespace HeatOptimizerApp.Views
             if (DataContext is MainWindowViewModel vm)
             {
                 vm.SelectedScenario = "Scenario2";
-                ReloadScenario();
+                vm.LoadScenarioUnits();
             }
         }
 
-        private void ReloadScenario()
-        {
-            if (DataContext is MainWindowViewModel vm)
-            {
-                vm.LoadScenarioUnits(); // Refresh units based on selected scenario
-            }
-        }
-
-        private void CompareScenarios(object sender, RoutedEventArgs e)
+        private void CompareScenarios(object? sender, RoutedEventArgs e)
         {
             if (DataContext is MainWindowViewModel vm)
             {
@@ -50,30 +42,36 @@ namespace HeatOptimizerApp.Views
             }
         }
 
-
         private void SaveScenarioResults(object? sender, RoutedEventArgs e)
         {
-            // TODO: Implement save scenario logic here
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.SaveScenarioToCsv();
+            }
         }
 
         private void OnOpenSavedResult(object? sender, RoutedEventArgs e)
         {
-            // TODO: Implement load saved result logic here
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.LoadScenarioFromCsv();
+            }
         }
 
         private void ReloadTimeSeries(object? sender, RoutedEventArgs e)
         {
-            // TODO: Implement reload time series logic here
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.ReloadTimeSeries();
+            }
         }
 
-        private void ExportEvaluationSummary(object? sender, RoutedEventArgs e)
+        private void OnLoadSimulatedChart(object? sender, RoutedEventArgs e)
         {
-            // TODO: Implement export evaluation summary here
-        }
-
-        private void ExportComparisonCsv(object? sender, RoutedEventArgs e)
-        {
-            // TODO: Implement export comparison CSV here
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.LoadSimulatedChart();
+            }
         }
 
         private async void LoadWinterData(object? sender, RoutedEventArgs e)
@@ -82,10 +80,7 @@ namespace HeatOptimizerApp.Views
             {
                 Title = "Select Winter Heat Demand CSV",
                 AllowMultiple = false,
-                FileTypeFilter = new[]
-                {
-                    new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } }
-                }
+                FileTypeFilter = new[] { new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } } }
             });
 
             if (files.Count > 0)
@@ -105,10 +100,7 @@ namespace HeatOptimizerApp.Views
             {
                 Title = "Select Summer Heat Demand CSV",
                 AllowMultiple = false,
-                FileTypeFilter = new[]
-                {
-                    new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } }
-                }
+                FileTypeFilter = new[] { new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } } }
             });
 
             if (files.Count > 0)
