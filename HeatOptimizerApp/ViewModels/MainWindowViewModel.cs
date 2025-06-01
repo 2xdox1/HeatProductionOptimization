@@ -58,6 +58,10 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private string chartTitle = "";
 
+    [ObservableProperty]
+    private string? selectedUnitName;
+
+
     // Heat demand data loaded from CSV for winter
     private List<TimeSeriesPoint> winterHeatDemandData = new();
     public List<TimeSeriesPoint> WinterHeatDemandData
@@ -148,12 +152,6 @@ public partial class MainWindowViewModel : ObservableObject
     partial void OnIsDailyChanged(bool value)
     {
         if (value) IsHourly = false;
-        UpdateChart();
-    }
-
-    partial void OnSelectedScenarioChanged(string value)
-    {
-        LoadScenarioUnits();
         UpdateChart();
     }
 
@@ -292,5 +290,33 @@ public partial class MainWindowViewModel : ObservableObject
     private IEnumerable<ProductionUnit> GetUnitsForScenario2()
     {
         return controller.GetUnits().Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1");
+    }
+
+    partial void OnSelectedUnitNameChanged(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            SelectedUnitDetails = "Select a unit to see details...";
+            return;
+        }
+
+        // Find the ProductionUnit with the matching name
+        var unit = controller.GetUnits().FirstOrDefault(u => u.Name == value);
+
+        if (unit != null)
+        {
+            SelectedUnitDetails =
+                $"Name: {unit.Name}\n" +
+                $"Max Heat: {unit.MaxHeat} MW\n" +
+                $"Production Cost: {unit.ProductionCost} DKK/MWh\n" +
+                $"CO₂ Emission: {unit.CO2Emission ?? 0} kg/MWh\n" +
+                $"Gas Consumption: {unit.GasConsumption?.ToString("0.0") ?? "–"} MWh\n" +
+                $"Oil Consumption: {unit.OilConsumption?.ToString("0.0") ?? "–"} MWh\n" +
+                $"Max Electricity: {unit.MaxElectricity?.ToString("0.0") ?? "–"} MW";
+        }
+        else
+        {
+            SelectedUnitDetails = "Details not found.";
+        }
     }
 }
