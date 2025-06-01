@@ -14,6 +14,9 @@
         <Button Content="Save Scenario Results" Click="SaveScenarioResults"/>
         <Button Content="Load Saved Result" Click="OnOpenSavedResult"/>
         <Button Content="Reload Time Series" Click="ReloadTimeSeries"/>
+        <!-- New buttons to load real CSV data -->
+        <Button Content="Load Winter Data" Click="LoadWinterData"/>
+        <Button Content="Load Summer Data" Click="LoadSummerData"/>
       </StackPanel>
     </Border>
 

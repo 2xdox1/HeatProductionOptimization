@@ -1,10 +1,15 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
+using HeatOptimizerApp.Modules.SourceDataManager;
+using HeatOptimizerApp.ViewModels;
 
 namespace HeatOptimizerApp.Views;
 
 public partial class MainWindow : Window
 {
+    private readonly SourceDataManager sourceDataManager = new();
+
     public MainWindow()
     {
         InitializeComponent();
@@ -48,5 +53,51 @@ public partial class MainWindow : Window
     private void ExportComparisonCsv(object? sender, RoutedEventArgs e)
     {
         // TODO: Implement export comparison CSV
+    }
+
+    private async void LoadWinterData(object? sender, RoutedEventArgs e)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Select Winter Heat Demand CSV",
+            AllowMultiple = false,
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } }
+            }
+        });
+
+        if (files.Count > 0)
+        {
+            var heatDemandData = sourceDataManager.LoadTimeSeries(files[0].Path.LocalPath);
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.HeatDemandData = heatDemandData;
+                vm.UpdateChart();
+            }
+        }
+    }
+
+    private async void LoadSummerData(object? sender, RoutedEventArgs e)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Select Summer Heat Demand CSV",
+            AllowMultiple = false,
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } }
+            }
+        });
+
+        if (files.Count > 0)
+        {
+            var heatDemandData = sourceDataManager.LoadTimeSeries(files[0].Path.LocalPath);
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.HeatDemandData = heatDemandData;
+                vm.UpdateChart();
+            }
+        }
     }
 }

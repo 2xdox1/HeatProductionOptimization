@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Ee90e2ud0F0=",
+  "dgSpecHash": "OSVUjEb1xO4=",
   "success": true,
   "projectFilePath": "/Users/dodo/Library/Mobile Documents/com~apple~CloudDocs/personal/SDU/HeatProductionOptimization/HeatOptimizerApp/HeatOptimizerApp.csproj",
   "expectedPackageFiles": [
@@ -23,6 +23,7 @@
     "/Users/dodo/.nuget/packages/avalonia.x11/11.3.0/avalonia.x11.11.3.0.nupkg.sha512",
     "/Users/dodo/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512",
     "/Users/dodo/.nuget/packages/communitytoolkit.mvvm/8.2.1/communitytoolkit.mvvm.8.2.1.nupkg.sha512",
+    "/Users/dodo/.nuget/packages/csvhelper/33.0.1/csvhelper.33.0.1.nupkg.sha512",
     "/Users/dodo/.nuget/packages/harfbuzzsharp/7.3.0.3/harfbuzzsharp.7.3.0.3.nupkg.sha512",
     "/Users/dodo/.nuget/packages/harfbuzzsharp.nativeassets.linux/7.3.0.3/harfbuzzsharp.nativeassets.linux.7.3.0.3.nupkg.sha512",
     "/Users/dodo/.nuget/packages/harfbuzzsharp.nativeassets.macos/7.3.0.3/harfbuzzsharp.nativeassets.macos.7.3.0.3.nupkg.sha512",
