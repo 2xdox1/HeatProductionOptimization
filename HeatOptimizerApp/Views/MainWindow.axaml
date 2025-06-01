@@ -3,8 +3,8 @@
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
         x:Class="HeatOptimizerApp.Views.MainWindow"
         Title="Heat Optimizer"
-        Width="500"
-        Height="800">
+        Width="600"
+        Height="900">
 
   <ScrollViewer VerticalScrollBarVisibility="Auto">
     <StackPanel Margin="10" Spacing="10">
@@ -18,8 +18,6 @@
         <Button Content="Save Scenario Results" Click="SaveScenarioResults"/>
         <Button Content="Open Saved Result" Click="OnOpenSavedResult"/>
         <Button Content="Reload Time Series" Click="ReloadTimeSeries"/>
-        <Button Content="Show Summer Chart" Click="OnShowSummerChart"/>
-        <Button Content="Show Winter Chart" Click="OnShowWinterChart"/>
       </StackPanel>
 
       <!-- Filters -->
@@ -38,7 +36,6 @@
         </ComboBox>
       </StackPanel>
 
-      <!-- List of units -->
       <ListBox x:Name="UnitList" SelectionChanged="OnSelectionChanged"/>
 
       <TextBlock x:Name="ScenarioSummaryBlock"
@@ -46,20 +43,27 @@
                  FontStyle="Italic"
                  Margin="0,10,0,0"/>
 
+      <!-- Chart View Toggles -->
       <StackPanel Orientation="Horizontal" Spacing="10">
-        <ToggleButton x:Name="WinterToggle" Content="Winter" IsChecked="True" Checked="OnToggleChart" />
-        <ToggleButton x:Name="SummerToggle" Content="Summer" IsChecked="False" Checked="OnToggleChart" />
+        <TextBlock Text="Season:" VerticalAlignment="Center"/>
+        <ToggleButton Content="Winter" IsChecked="{Binding IsWinter}" />
+        <ToggleButton Content="Summer" IsChecked="{Binding IsSummer}" />
+        <TextBlock Text="Time Scale:" Margin="20,0,0,0" VerticalAlignment="Center"/>
+        <ToggleButton Content="Hourly" IsChecked="{Binding IsHourly}" />
+        <ToggleButton Content="Daily" IsChecked="{Binding IsDaily}" />
       </StackPanel>
-      
-      <!-- LiveCharts: Winter Chart -->
-      <TextBlock Text="Winter Scenario: Hourly Heat Production" FontWeight="Bold" Margin="0,20,0,0"/>
-      <lvc:CartesianChart Series="{Binding WinterSeries}"
+
+      <!-- Dynamic Chart Title -->
+      <TextBlock Text="{Binding ChartTitle}" FontWeight="Bold" FontSize="16" Margin="0,20,0,0"/>
+
+      <!-- Unified Chart Area -->
+      <lvc:CartesianChart Series="{Binding ChartSeries}"
                           XAxes="{Binding XAxes}"
                           YAxes="{Binding YAxes}"
                           LegendPosition="Right"
                           Height="300"/>
 
-      <!-- Static Chart Legend -->
+      <!-- Legend (Optional Static Example) -->
       <StackPanel Orientation="Horizontal" Spacing="20" Margin="0,20,0,0">
         <StackPanel Orientation="Horizontal" Spacing="5">
           <Rectangle Width="15" Height="15" Fill="SteelBlue"/>
@@ -71,15 +75,7 @@
         </StackPanel>
       </StackPanel>
 
-      <!-- Old Canvas Chart -->
-      <Canvas x:Name="ChartCanvas"
-              Width="400"
-              Height="200"
-              Margin="0,10,0,0"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Top"/>
-
-      <!-- LiveCharts: Comparison Chart -->
+      <!-- Comparison Chart -->
       <TextBlock Text="Scenario Summary Comparison" FontWeight="Bold"/>
       <TextBlock Text="Cost and CO₂ (per MWh)" FontStyle="Italic"/>
       <lvc:CartesianChart Series="{Binding ScenarioComparisonSeries}"
@@ -118,7 +114,6 @@
       <Button Content="Save Evaluation Summary" Click="ExportEvaluationSummary"/>
 
       <StackPanel Orientation="Horizontal" Margin="0,10,0,0" Spacing="10">
-        <!-- <Button Content="Export to CSV" Click="ExportToCsv"/> -->
         <Button Content="Export Scenario Comparison" Click="ExportComparisonCsv"/>
       </StackPanel>
 
