@@ -6,7 +6,7 @@
         Title="Heat Optimizer"
         Width="700"
         Height="900">
-        
+
   <DockPanel>
 
     <!-- Top Toolbar -->
@@ -46,8 +46,7 @@
             </StackPanel>
 
             <ListBox ItemsSource="{Binding Units}"
-                     SelectedItem="{Binding SelectedUnitName, Mode=TwoWay}"
-                     />
+                     SelectedItem="{Binding SelectedUnitName, Mode=TwoWay}" />
 
             <TextBlock Text="{Binding SelectedUnitDetails}"
                        Margin="0,5,0,0"
@@ -67,14 +66,32 @@
               <ToggleButton Content="Daily" IsChecked="{Binding IsDaily}" />
             </StackPanel>
 
-            <TextBlock Text="{Binding ChartTitle}" FontWeight="Bold" FontSize="16" Margin="0,20,0,0"/>
+            <!-- Title + Chart -->
+            <StackPanel HorizontalAlignment="Center" Width="1000" Margin="0,20,0,0">
+              <Grid ColumnDefinitions="*,*" Margin="0,0,0,10">
+                <!-- Title aligned to chart start -->
+                <TextBlock Grid.Column="0"
+                          Text="{Binding ChartTitle}"
+                          FontWeight="Bold"
+                          FontSize="22"
+                          TextWrapping="NoWrap"
+                          TextTrimming="CharacterEllipsis"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Center" />
 
-            <lvc:CartesianChart Series="{Binding ChartSeries}"
-                                XAxes="{Binding XAxes}"
-                                YAxes="{Binding YAxes}"
-                                LegendPosition="Right"
-                                Height="300"/>
+                <!-- Placeholder column to align visually -->
+                <TextBlock Grid.Column="1" />
+              </Grid>
 
+              <lvc:CartesianChart Series="{Binding ChartSeries}"
+                                  XAxes="{Binding XAxes}"
+                                  YAxes="{Binding YAxes}"
+                                  LegendPosition="Hidden"
+                                  Height="600" />
+            </StackPanel>
+
+
+            <!-- Optional visual indicators -->
             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0,20,0,0">
               <StackPanel Orientation="Horizontal" Spacing="5">
                 <Rectangle Width="15" Height="15" Fill="SteelBlue"/>
@@ -95,23 +112,17 @@
         <ScrollViewer>
           <StackPanel Margin="20" Spacing="12">
             <TextBlock Text="Scenario Comparison" FontSize="20" FontWeight="Bold" />
-
             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="0,10,0,0">
               <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Scenario1Summary.ScenarioName}" FontWeight="Bold"/>
               <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Scenario2Summary.ScenarioName}" FontWeight="Bold"/>
-
               <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedHeat}" />
               <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedHeat}" />
-
               <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedCost}" />
               <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedCost}" />
-
               <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedCO2}" />
               <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedCO2}" />
-
               <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedGas}" />
               <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedGas}" />
-
               <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Scenario1Summary.FormattedElectricity}" />
               <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Scenario2Summary.FormattedElectricity}" />
             </Grid>
@@ -119,27 +130,7 @@
         </ScrollViewer>
       </TabItem>
 
-      <!-- Winter Chart Tab 
-      <TabItem Header="Winter Chart">
-        <ScrollViewer>
-          <lvc:CartesianChart Series="{Binding WinterSeries}"
-                              XAxes="{Binding XAxes}"
-                              YAxes="{Binding YAxes}"
-                              LegendPosition="Right"
-                              Height="400"/>
-        </ScrollViewer>
-      </TabItem>-->
-
-      <!-- Summer Chart Tab 
-      <TabItem Header="Summer Chart">
-        <ScrollViewer>
-          <lvc:CartesianChart Series="{Binding SummerSeries}"
-                              XAxes="{Binding XAxesSummer}"
-                              YAxes="{Binding YAxesSummer}"
-                              LegendPosition="Right"
-                              Height="400"/>
-        </ScrollViewer>
-      </TabItem>  -->
+      <!-- City Map -->
       <TabItem Header="City Map">
         <ScrollViewer>
           <StackPanel Margin="20" Spacing="10">
@@ -147,7 +138,7 @@
             <TextBlock Text="City Map with Heat Distribution" FontSize="16" FontWeight="Bold" Margin="0,10,0,0" TextAlignment="Center"/>
           </StackPanel>
         </ScrollViewer>
-      </TabItem> 
+      </TabItem>
 
       <!-- Simulated Chart Tab -->
       <TabItem Header="Simulated Chart">

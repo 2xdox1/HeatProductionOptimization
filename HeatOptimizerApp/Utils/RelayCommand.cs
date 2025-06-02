@@ -16,6 +16,8 @@ namespace HeatOptimizerApp.Utils
 
         public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
         public void Execute(object? parameter) => _execute();
+
+        #pragma warning disable CS0067 // Event is never used
         public event EventHandler? CanExecuteChanged;
     }
 }
