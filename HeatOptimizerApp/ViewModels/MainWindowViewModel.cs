@@ -141,23 +141,28 @@ public partial class MainWindowViewModel : ObservableObject
         }
     }
 
-    public MainWindowViewModel()
+   public MainWindowViewModel()
     {
-
-        // ❗ Prevent LiveCharts from crashing by setting empty axes early
+        // Prevent LiveCharts from crashing by setting empty axes early
         SimulatedSeries = Array.Empty<ISeries>();
         SimulatedXAxis = new Axis[] { new Axis { Labels = new[] { " " }, Name = "Time" } };
         SimulatedYAxis = new Axis[] { new Axis { Name = "Heat (MWh)" } };
 
-        // Initialize controller
+        // Initialize controller and preload CSVs
         controller.RunProject();
+
+        // NEW: Assign preloaded data into properties that drive the charts
+        WinterHeatDemandData = controller.WinterHeatDemand
+            .Select((val, i) => new TimeSeriesPoint { Hour = i, Value = val }).ToList();
+
+        SummerHeatDemandData = controller.SummerHeatDemand
+            .Select((val, i) => new TimeSeriesPoint { Hour = i, Value = val }).ToList();
 
         // Initialize toggles mutually exclusive
         IsSummer = !IsWinter;
         IsDaily = !IsHourly;
 
         LoadScenarioUnits(); // Load initial scenario units
-
         UpdateChart();
 
         SaveScenarioResultsCommand = new RelayCommand(() => Console.WriteLine("Save scenario results clicked"));
@@ -166,6 +171,7 @@ public partial class MainWindowViewModel : ObservableObject
         LoadWinterDataCommand = new RelayCommand(() => Console.WriteLine("Load winter data clicked"));
         LoadSummerDataCommand = new RelayCommand(() => Console.WriteLine("Load summer data clicked"));
     }
+
 
     // Ensure mutual exclusivity for toggles and update chart accordingly
     partial void OnIsWinterChanged(bool value)
@@ -200,13 +206,13 @@ public partial class MainWindowViewModel : ObservableObject
         if (IsWinter)
         {
             values = IsHourly && WinterHeatDemandData != null && WinterHeatDemandData.Count > 0
-                ? WinterHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value)
+                ? AverageHourly(WinterHeatDemandData).OrderBy(p => p.Hour).Select(p => p.Value)
                 : WinterDailyHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
         }
         else
         {
             values = IsHourly && SummerHeatDemandData != null && SummerHeatDemandData.Count > 0
-                ? SummerHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value)
+                ? AverageHourly(SummerHeatDemandData).OrderBy(p => p.Hour).Select(p => p.Value)
                 : SummerDailyHeatDemandData.OrderBy(p => p.Hour).Select(p => p.Value);
         }
 
@@ -218,8 +224,11 @@ public partial class MainWindowViewModel : ObservableObject
         {
             Name = $"{SelectedScenario} - {(IsWinter ? "Winter" : "Summer")} - {(IsHourly ? "Hourly" : "Daily")}",
             Values = values.ToArray(),
-            MaxBarWidth = barWidth
+            MaxBarWidth = barWidth,
+            Padding = 0
         });
+
+        var labelCount = values.Count();
 
         XAxes = new List<Axis>
         {
@@ -228,8 +237,12 @@ public partial class MainWindowViewModel : ObservableObject
                 Name = IsHourly ? "Hour" : "Day",
                 Labels = IsHourly
                     ? Enumerable.Range(0, 24).Select(i => i.ToString()).ToList()
-                    : Enumerable.Range(1, (IsWinter ? WinterDailyHeatDemandData.Count : SummerDailyHeatDemandData.Count))
-                        .Select(i => $"Day {i}").ToList()
+                    : Enumerable.Range(1, labelCount).Select(i => i.ToString()).ToList(),
+                MinLimit = -0.5,
+                MaxLimit = labelCount - 0.5,
+                MinStep = 1,
+                LabelsRotation = 0,
+                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 }
             }
         };
 
@@ -244,10 +257,11 @@ public partial class MainWindowViewModel : ObservableObject
             currentData = IsHourly ? SummerHeatDemandData ?? new List<TimeSeriesPoint>() : SummerDailyHeatDemandData ?? new List<TimeSeriesPoint>();
         }
 
-        // Calculate maxLimit safely (fallback to 50 if null or empty)
-        double maxLimit = (currentData != null && currentData.Count > 0)
-            ? CalculateMaxLimit(currentData)
+        double maxVal = (currentData != null && currentData.Count > 0)
+            ? currentData.Max(p => p.Value)
             : 50;
+
+        double maxLimit = GetNiceAxisLimit(maxVal);
 
         YAxes = new List<Axis>
         {
@@ -255,15 +269,30 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 Name = "Heat Produced (MW)",
                 MinLimit = 0,
-                MaxLimit = maxLimit * 1.1,
-                MinStep = Math.Max(1, maxLimit / 10),
+                MaxLimit = maxLimit,
+                MinStep = Math.Ceiling(maxLimit / 6),
                 ForceStepToMin = true,
+                LabelsPaint = new SolidColorPaint(SKColors.Black, 12),
                 SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 }
             }
         };
 
         ChartTitle = $"{SelectedScenario}: {(IsWinter ? "Winter" : "Summer")} — {(IsHourly ? "Hourly" : "Daily")} Heat Production";
         OnPropertyChanged(nameof(ChartTitle));
+    }
+
+    private double GetNiceAxisLimit(double maxValue)
+    {
+        if (maxValue < 1)
+            return 1;
+
+        if (maxValue < 5)
+            return Math.Ceiling(maxValue * 1.2 * 2) / 2; // round to nearest 0.5
+
+        if (maxValue < 20)
+            return Math.Ceiling(maxValue * 1.1); // round to next integer
+
+        return Math.Ceiling(maxValue / 5.0) * 5 + 5;
     }
 
     // Helper method to calculate a nice rounded max limit for the Y axis
@@ -299,6 +328,28 @@ public partial class MainWindowViewModel : ObservableObject
 
         return dailyData;
     }
+
+    private List<TimeSeriesPoint> AverageHourly(List<TimeSeriesPoint> fullData)
+    {
+        var hourlyAverages = new List<TimeSeriesPoint>();
+
+        for (int h = 0; h < 24; h++)
+        {
+            var valuesAtHour = fullData
+                .Where(p => p.Hour % 24 == h)
+                .Select(p => p.Value)
+                .ToList();
+
+            if (valuesAtHour.Any())
+            {
+                double avg = valuesAtHour.Average();
+                hourlyAverages.Add(new TimeSeriesPoint { Hour = h, Value = avg });
+            }
+        }
+
+        return hourlyAverages;
+    }
+
 
     public void LoadScenarioUnits()
     {
