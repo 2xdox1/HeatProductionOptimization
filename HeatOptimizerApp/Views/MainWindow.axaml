@@ -7,10 +7,12 @@
         Width="700"
         Height="900">
 
+        
+
   <DockPanel>
 
     <!-- Top Toolbar -->
-    <Border Padding="10" Background="LightGray" DockPanel.Dock="Top">
+    <Border Padding="10" Background="#e2000f" DockPanel.Dock="Top">
       <StackPanel Orientation="Horizontal" Spacing="10">
         <Button Content="Save Scenario Results" Click="SaveScenarioResults"/>
         <Button Content="Load Saved Result" Click="OnOpenSavedResult"/>
@@ -47,11 +49,10 @@
 
             <ListBox ItemsSource="{Binding Units}"
                      SelectedItem="{Binding SelectedUnitName, Mode=TwoWay}"
-                     Height="250"
-                     Margin="0,10,0,0"/>
+                     />
 
             <TextBlock Text="{Binding SelectedUnitDetails}"
-                       Margin="0,10,0,0"
+                       Margin="0,5,0,0"
                        TextWrapping="Wrap"
                        FontSize="12"/>
 
@@ -116,7 +117,7 @@
         </ScrollViewer>
       </TabItem>
 
-      <!-- Winter Chart Tab -->
+      <!-- Winter Chart Tab 
       <TabItem Header="Winter Chart">
         <ScrollViewer>
           <lvc:CartesianChart Series="{Binding WinterSeries}"
@@ -125,9 +126,9 @@
                               LegendPosition="Right"
                               Height="400"/>
         </ScrollViewer>
-      </TabItem>
+      </TabItem>-->
 
-      <!-- Summer Chart Tab -->
+      <!-- Summer Chart Tab 
       <TabItem Header="Summer Chart">
         <ScrollViewer>
           <lvc:CartesianChart Series="{Binding SummerSeries}"
@@ -136,7 +137,15 @@
                               LegendPosition="Right"
                               Height="400"/>
         </ScrollViewer>
-      </TabItem>
+      </TabItem>  -->
+      <TabItem Header="City Map">
+        <ScrollViewer>
+          <StackPanel Margin="20" Spacing="10">
+            <Image Source="../Assets/CityMap.png" Width="600" Height="400"/>
+            <TextBlock Text="City Map with Heat Distribution" FontSize="16" FontWeight="Bold" Margin="0,10,0,0" TextAlignment="Center"/>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem> 
 
       <!-- Simulated Chart Tab -->
       <TabItem Header="Simulated Chart">
