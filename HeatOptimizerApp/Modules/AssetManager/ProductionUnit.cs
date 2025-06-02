@@ -9,5 +9,6 @@ namespace HeatOptimizerApp.Modules.AssetManager
         public double? CO2Emission { get; set; }
         public double? GasConsumption { get; set; }
         public double? OilConsumption { get; set; }
+        public string ImagePath { get; set; } = "";
     }
 }

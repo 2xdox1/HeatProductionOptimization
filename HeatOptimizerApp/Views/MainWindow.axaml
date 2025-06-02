@@ -52,6 +52,10 @@
                        Margin="0,5,0,0"
                        TextWrapping="Wrap"
                        FontSize="12"/>
+            <Image Source="{Binding SelectedUnitBitmap}"
+                    MaxHeight="100"
+                  HorizontalAlignment="Left"
+                   Margin="0,5,0,0"/>
 
             <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,20,0,0">
               <TextBlock Text="Season:" VerticalAlignment="Center"/>
