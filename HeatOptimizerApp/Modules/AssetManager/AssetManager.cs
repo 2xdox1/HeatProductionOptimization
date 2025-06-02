@@ -43,7 +43,8 @@ namespace HeatOptimizerApp.Modules.AssetManager
                         CO2Emission = ParseDouble(parts.ElementAtOrDefault(3)),
                         GasConsumption = ParseDouble(parts.ElementAtOrDefault(4)),
                         OilConsumption = ParseDouble(parts.ElementAtOrDefault(5)),
-                        MaxElectricity = ParseDouble(parts.ElementAtOrDefault(6))
+                        MaxElectricity = ParseDouble(parts.ElementAtOrDefault(6)),
+                        ImagePath = parts.ElementAtOrDefault(7) ?? ""
                     };
 
                     Units.Add(unit);

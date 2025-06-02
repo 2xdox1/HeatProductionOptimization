@@ -17,6 +17,10 @@ using HeatOptimizerApp.Modules.Core;
 using HeatOptimizerApp.Modules.AssetManager;
 using HeatOptimizerApp.Modules.ResultDataManager;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Avalonia;
+using System.Security.Cryptography.X509Certificates;
 
 
 namespace HeatOptimizerApp.ViewModels;
@@ -71,6 +75,10 @@ public partial class MainWindowViewModel : ObservableObject
 
     [ObservableProperty]
     private bool filterElectricOnly = false;
+
+    [ObservableProperty]
+    private Bitmap selectedUnitBitmap = ImageHelper.LoadFromResource(
+        new Uri("avares://HeatOptimizerApp/Assets/BaseImage.png")); // Use your default image path
 
     public ISeries[] SimulatedSeries { get; set; } = Array.Empty<ISeries>();
     public Axis[] SimulatedXAxis { get; set; } = Array.Empty<Axis>();
@@ -350,11 +358,15 @@ public partial class MainWindowViewModel : ObservableObject
         return controller.GetUnits().Where(u => u.Name is "GB1" or "OB1" or "GM1" or "HP1");
     }
 
+    // Property to hold the selected unit image path or info
+
     partial void OnSelectedUnitNameChanged(string? value)
     {
         if (string.IsNullOrEmpty(value))
         {
             SelectedUnitDetails = "Select a unit to see details...";
+            SelectedUnitBitmap = ImageHelper.LoadFromResource(
+                new Uri("avares://HeatOptimizerApp/Assets/BaseImage.png")); // fallback image
             return;
         }
 
@@ -371,11 +383,21 @@ public partial class MainWindowViewModel : ObservableObject
                 $"Gas Consumption: {unit.GasConsumption?.ToString("0.0") ?? "–"} MWh\n" +
                 $"Oil Consumption: {unit.OilConsumption?.ToString("0.0") ?? "–"} MWh\n" +
                 $"Max Electricity: {unit.MaxElectricity?.ToString("0.0") ?? "–"} MW";
+            SelectedUnitBitmap = ImageHelper.LoadFromResource(
+                   new Uri($"avares://HeatOptimizerApp/Assets/{unit.ImagePath}.png"));
+            // Notify UI of changes
+            OnPropertyChanged(nameof(SelectedUnitBitmap));
+            
         }
         else
         {
             SelectedUnitDetails = "Details not found.";
+            SelectedUnitBitmap = ImageHelper.LoadFromResource(
+                new Uri("avares://HeatOptimizerApp/Assets/BaseImage.png")); // fallback image
+            OnPropertyChanged(nameof(SelectedUnitBitmap)); // Notify UI if needed
         }
+
+
     }
     partial void OnFilterElectricOnlyChanged(bool value)
     {
@@ -524,25 +546,25 @@ public partial class MainWindowViewModel : ObservableObject
         OnPropertyChanged(nameof(SimulatedYAxis));
         OnPropertyChanged(nameof(ChartTitle));
     }
-    
+
     public void SaveScenarioToCsv()
     {
         var scenario = SelectedScenario;
-            if (string.IsNullOrEmpty(scenario) || !ScenarioData.TryGetValue(scenario, out var data))
-            {
-                Console.WriteLine("❌ No scenario data to save.");
-                return;
-            }
+        if (string.IsNullOrEmpty(scenario) || !ScenarioData.TryGetValue(scenario, out var data))
+        {
+            Console.WriteLine("❌ No scenario data to save.");
+            return;
+        }
 
-            var path = $"SavedResults/{scenario}_saved.csv";
-            var lines = new List<string> { "Time,Unit,HeatProduced,Cost,CO2,ElectricityProduced,ElectricityConsumed" };
-            foreach (var r in data)
-            {
-                lines.Add($"{r.Time},{r.UnitName},{r.HeatProduced},{r.Cost},{r.CO2},{r.ElectricityProduced?.ToString() ?? ""},{r.ElectricityConsumed?.ToString() ?? ""}");
-            }
+        var path = $"SavedResults/{scenario}_saved.csv";
+        var lines = new List<string> { "Time,Unit,HeatProduced,Cost,CO2,ElectricityProduced,ElectricityConsumed" };
+        foreach (var r in data)
+        {
+            lines.Add($"{r.Time},{r.UnitName},{r.HeatProduced},{r.Cost},{r.CO2},{r.ElectricityProduced?.ToString() ?? ""},{r.ElectricityConsumed?.ToString() ?? ""}");
+        }
 
-            File.WriteAllLines(path, lines);
-            Console.WriteLine($" Scenario saved to {path}");
+        File.WriteAllLines(path, lines);
+        Console.WriteLine($" Scenario saved to {path}");
     }
 
     public void LoadScenarioFromCsv()
@@ -556,7 +578,7 @@ public partial class MainWindowViewModel : ObservableObject
             return;
         }
 
-       var results = SimulatedResultLoader.LoadSimulatedResults(path);
+        var results = SimulatedResultLoader.LoadSimulatedResults(path);
         ScenarioData[scenario] = results;
         Units = new ObservableCollection<string>(
         results.Select(r => r.UnitName).Distinct());
@@ -572,4 +594,11 @@ public partial class MainWindowViewModel : ObservableObject
         UpdateChart();
     }
 
+}
+public static class ImageHelper
+{
+    public static Bitmap LoadFromResource(Uri resourceUri)
+    {
+        return new Bitmap(AssetLoader.Open(resourceUri));
+    }
 }
